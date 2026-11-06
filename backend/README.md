@@ -2,6 +2,10 @@
 
 Backend REST independiente para que otro equipo conecte su aplicación React. React no forma parte del proyecto y la API no depende de Vite. Se conecta a **MySQL alojado en Aiven**, siguiendo las tablas `clientes` y `atencion_cliente` del archivo `cursoia.sql`.
 
+El servidor API escucha en `http://localhost:4000` para dejar libre el puerto `3000`, que usa Create React App por defecto. CORS permite el frontend en `http://localhost:3000`. La documentación interactiva de Swagger está en `http://localhost:4000/api/docs` y la definición OpenAPI en `http://localhost:4000/api/docs.json`.
+
+El backend queda listo para que el frontend consuma sus rutas, pero el frontend actual todavía guarda clientes y chats en `localStorage`; seguirá mostrando datos locales hasta que su equipo conecte esos componentes a la API. Para clientes, la API acepta el formato de formulario del frontend (`nombre` completo, `correo`, `telefono`) y también el formato de base de datos (`nombre`, `apellido`, `email`). Las respuestas incluyen ambos alias (`id`/`id_cliente`, `correo`/`email`) para facilitar la integración.
+
 ## Esquema
 
 La API usa `clientes` y `atencion_cliente`; la tabla `datos_personales` de la referencia no interviene en ese flujo. El archivo recibido es SQL de MySQL y coincide con el motor que usa esta versión del backend. Al arrancar, `src/db/init.js` crea las dos tablas del flujo si todavía no existen, con columnas compatibles con el esquema de referencia. No elimina tablas ni carga automáticamente los INSERT de ejemplo: importa el archivo SQL en la base de Aiven si necesitas sus datos de muestra. Hazlo solo en la base de destino correcta, porque ese script elimina y vuelve a crear las tablas indicadas.
@@ -19,13 +23,13 @@ Desde esta carpeta instala dependencias:
 npm install
 ```
 
-Copia `.env.example` como `.env` y rellena `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` con los valores de la consola de Aiven. Con `DB_SSL=true` (predeterminado), la conexión viaja cifrada y no hace falta descargar el certificado para empezar. Para verificar también la identidad del servidor, descarga **CA Certificate** en Aiven y define `DB_SSL_CA=./aiven-ca.pem`; en ese caso guarda el certificado en la carpeta `backend`. Sin `DB_SSL_CA`, el cliente acepta el certificado del servidor sin validarlo, lo que simplifica el desarrollo pero es menos seguro frente a una posible suplantación. No compartas ni subas `.env`. `CORS_ORIGIN` debe contener el origen del frontend (por ejemplo `http://localhost:3001`); permite varios separados por comas.
+Copia `.env.example` como `.env` y rellena `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` con los valores de la consola de Aiven. Con `DB_SSL=true` (predeterminado), la conexión viaja cifrada y no hace falta descargar el certificado para empezar. Para verificar también la identidad del servidor, descarga **CA Certificate** en Aiven y define `DB_SSL_CA=./aiven-ca.pem`; en ese caso guarda el certificado en la carpeta `backend`. Sin `DB_SSL_CA`, el cliente acepta el certificado del servidor sin validarlo, lo que simplifica el desarrollo pero es menos seguro frente a una posible suplantación. No compartas ni subas `.env`. `CORS_ORIGIN` debe contener `http://localhost:3000` para el frontend actual; permite varios orígenes separados por comas.
 
 ```bash
 npm run dev
 ```
 
-Para ejecución normal: `npm start`. La API escucha en `http://localhost:3000` por defecto (`PORT` permite cambiarlo).
+Para ejecución normal: `npm start`. La API escucha en `http://localhost:4000` por defecto (`PORT` permite cambiarlo). En el navegador abre `http://localhost:4000/api/docs` para probar los endpoints. Si ya tienes un `.env` de una versión anterior, actualiza sus valores a `PORT=4000` y `CORS_ORIGIN=http://localhost:3000`.
 
 ## Endpoints
 
@@ -61,11 +65,11 @@ Para crear, envía `id` (ID del cliente) y `Consulta`. Los estados admitidos son
 Crear cliente y consulta:
 
 ```bash
-curl -X POST http://localhost:3000/api/clientes \
+curl -X POST http://localhost:4000/api/clientes \
   -H "Content-Type: application/json" \
   -d '{"nombre":"Ana","apellido":"Pérez","email":"ana@example.com","telefono":"600123123"}'
 
-curl -X POST http://localhost:3000/api/consultas \
+curl -X POST http://localhost:4000/api/consultas \
   -H "Content-Type: application/json" \
   -d '{"id":1,"Consulta":"¿Cuál es el horario de atención?"}'
 ```
@@ -73,11 +77,11 @@ curl -X POST http://localhost:3000/api/consultas \
 Responder consulta y listar pendientes:
 
 ```bash
-curl -X PATCH http://localhost:3000/api/consultas/1 \
+curl -X PATCH http://localhost:4000/api/consultas/1 \
   -H "Content-Type: application/json" \
   -d '{"Respuesta":"Atendemos de lunes a viernes.","estado_respuesta":"respondida"}'
 
-curl "http://localhost:3000/api/consultas?estado_respuesta=pendiente&limit=10&offset=0"
+curl "http://localhost:4000/api/consultas?estado_respuesta=pendiente&limit=10&offset=0"
 ```
 
 La API no implementa autenticación. Añadid autenticación/autorización antes de publicar escrituras en internet. El SQL indica que el backend notificará a Zapier al insertar consultas; esa integración externa no está incluida en este CRUD.

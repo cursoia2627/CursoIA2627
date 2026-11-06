@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const env = {
-  port: Number(process.env.PORT || 3000),
+  port: Number(process.env.PORT || 4000),
   nodeEnv: process.env.NODE_ENV || 'development',
   dbHost: process.env.DB_HOST,
   dbPort: Number(process.env.DB_PORT || 3306),
@@ -10,7 +10,7 @@ const env = {
   dbName: process.env.DB_NAME || 'cursoia',
   dbSsl: process.env.DB_SSL !== 'false',
   dbSslCa: process.env.DB_SSL_CA,
-  corsOrigins: (process.env.CORS_ORIGIN || 'http://localhost:3001')
+  corsOrigins: (process.env.CORS_ORIGIN || 'http://localhost:3000')
     .split(',').map((origin) => origin.trim()).filter(Boolean),
 };
 
