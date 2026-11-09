@@ -77,3 +77,7 @@ npm run build
 ```
 
 La compilación optimizada se guarda en `build/`.
+
+## 7. Instalación PWA y Electron
+
+La app puede instalarse desde el navegador en `localhost` o, en Render, cuando se publique por HTTPS. Para abrirla en una ventana Electron desde `frontend`, ejecuta `npm run electron:dev`; para generar el instalador de Windows, ejecuta `npm run electron:package`. La API debe estar activa por separado en `http://localhost:4000`; en Render configura `REACT_APP_API_URL` con la URL pública de la API antes de compilar.

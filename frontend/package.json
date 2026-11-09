@@ -2,6 +2,8 @@
   "name": "ia-para-todos-frontend",
   "version": "1.0.0",
   "private": true,
+  "homepage": ".",
+  "main": "electron/main.cjs",
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -12,10 +14,51 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "electron:dev": "concurrently -k \"npm:start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:package": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "es.cursoia2627.ia.para.todos",
+    "productName": "IA para Todos",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "build/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "electron": "^45.2.3",
+    "electron-builder": "^25.1.8",
+    "wait-on": "^8.0.1"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
-    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "allowScripts": {
+    "electron@33.4.11": true
   }
 }
