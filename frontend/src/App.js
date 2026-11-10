@@ -4,6 +4,7 @@ import Brand from './components/Brand';
 import Clientes from './components/Clientes';
 import ChatBot from './components/ChatBot';
 import Avatar from './components/Avatar';
+import CookieConsent from './components/CookieConsent';
 import {conversacionesIniciales} from './data/demo';
 
 const tabs=[{id:'clientes',label:'Clientes',icon:Users},{id:'chat',label:'Chat Bot',icon:MessageSquare},{id:'avatar',label:'Avatar',icon:UserRound}];
@@ -21,5 +22,5 @@ export default function App(){
  {tab==='clientes'&&<Clientes/>}
  {tab==='chat'&&<ChatBot conversaciones={conversaciones} setConversaciones={setConversaciones}/>}
  {tab==='avatar'&&<Avatar/>}
- </div></main></div></div>;
+ </div></main></div><CookieConsent/></div>;
 }
