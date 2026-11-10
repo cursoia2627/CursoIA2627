@@ -1,6 +1,9 @@
 node_modules/
+**/node_modules/
 .env
+**/.env
+build/
+**/build/
+coverage/
 npm-debug.log*
-
-/frontend/build/
-/frontend/dist-electron/
+.DS_Store

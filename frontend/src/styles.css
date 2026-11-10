@@ -30,3 +30,18 @@
 @keyframes avatar-rotate{to{transform:rotate(360deg)}}
 @media(max-width:1080px){.avatar-ai-layout{grid-template-columns:1fr 1fr}.avatar-db-info{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr)}.avatar-db-info .gallery-head,.avatar-db-info>p{grid-column:1/-1}}
 @media(max-width:700px){.avatar-ai-layout{grid-template-columns:1fr}.avatar-ai-preview,.avatar-form,.avatar-db-info{grid-column:1}.avatar-db-info{display:flex}.avatar-ai-preview>img{height:190px;width:190px}.avatar-empty{min-height:190px}}
+
+/* CRUD real de Clientes y Consultas (MySQL) */
+.crud-view-switch{display:flex;align-items:center;gap:8px;margin:15px 0 4px;flex-wrap:wrap}
+.crud-view-switch button{display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:1px solid #e4e7ed;background:#f7f8fa;color:#475569;border-radius:9px;padding:8px 13px;font-size:12px}
+.crud-view-switch button.selected{background:#fff0e1;border-color:#ffc58c;color:#d56b00;font-weight:700}
+.crud-view-switch .crud-refresh{margin-left:auto}
+.crud-view-switch button:disabled{opacity:.5;cursor:not-allowed}
+.crud-alert{padding:10px 12px;border-radius:9px;margin-top:12px;font-size:12px;line-height:1.5}
+.crud-error{background:#fff0f0;color:#9f1d1d;border:1px solid #ffc6c6}
+.crud-success{background:#eff9ed;color:#32692e;border:1px solid #c6e6c0}
+.modal textarea,.modal select{width:100%;border:1px solid #d8dce5;border-radius:8px;padding:10px 11px;background:#fff;color:#2e3440;font-size:12px}
+.modal textarea{resize:vertical}
+.modal{max-height:90vh;overflow:auto}
+.clients-panel .table-wrap td{overflow-wrap:anywhere}
+@media(max-width:700px){.crud-view-switch .crud-refresh{margin-left:0}.clients-panel .table-wrap th:nth-child(4),.clients-panel .table-wrap td:nth-child(4){display:none}}
