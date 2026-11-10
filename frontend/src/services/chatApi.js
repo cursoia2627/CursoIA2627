@@ -2,7 +2,7 @@
 const BASE = (process.env.REACT_APP_API_URL || 'http://localhost:4000').replace(/\/+$/, '');
 async function request(path, options = {}) {
   let response;
-  try {response = await fetch(BASE + path, {...options, headers:{'Content-Type':'application/json'}});} catch(error) {
+  try { response = await fetch(BASE + path, { ...options, headers: { 'Content-Type': 'application/json' } }); } catch (error) {
     if (error.name === 'AbortError') throw error;
     throw new Error('No se puede conectar con el servidor. Comprueba que el backend esté arrancado.');
   }
@@ -15,27 +15,27 @@ async function request(path, options = {}) {
 async function listAll(path, signal) {
   let offset = 0;
   const items = [], seen = new Set();
-  for (;;) {
-    const page = await request(`${path}${path.includes('?') ? '&' : '?'}limit=100&offset=${offset}`, {signal});
+  for (; ;) {
+    const page = await request(`${path}${path.includes('?') ? '&' : '?'}limit=100&offset=${offset}`, { signal });
     if (!Array.isArray(page.items) || !Number.isFinite(Number(page.total))) throw new Error('Listado de API no válido.');
     for (const item of page.items) {
       const id = item.id_consulta ?? item.id_cliente ?? item.id;
-      if (!seen.has(id)) {seen.add(id); items.push(item);}
+      if (!seen.has(id)) { seen.add(id); items.push(item); }
     }
     offset += page.items.length;
     if (offset >= Number(page.total)) return items;
     if (!page.items.length) throw new Error('Historial incompleto. Actualiza para reintentar.');
   }
 }
-export function listClientes(signal) {return listAll('/api/clientes', signal);}
-export function getAiStatus(signal) {return request('/api/ia/status', {signal});}
+export function listClientes(signal) { return listAll('/clientes', signal); }
+export function getAiStatus(signal) { return request('/ia/status', { signal }); }
 export async function listConsultas(clienteId, signal) {
-  const items = await listAll(`/api/consultas?id=${encodeURIComponent(clienteId)}`, signal);
+  const items = await listAll(`/consultas?id=${encodeURIComponent(clienteId)}`, signal);
   if (items.some(item => String(item.id) !== String(clienteId))) throw new Error('La API devolvió consultas de otro cliente. No se mostrará este historial.');
-  return items.sort((a,b) => Number(a.id_consulta) - Number(b.id_consulta));
+  return items.sort((a, b) => Number(a.id_consulta) - Number(b.id_consulta));
 }
 export async function createConsulta(clienteId, texto, signal) {
-  const item = await request('/api/consultas', {method:'POST', signal, body:JSON.stringify({id:Number(clienteId), Consulta:texto})});
+  const item = await request('/consultas', { method: 'POST', signal, body: JSON.stringify({ id: Number(clienteId), Consulta: texto }) });
   if (!item?.id_consulta || String(item.id) !== String(clienteId)) throw new Error('La API no confirmó la consulta para el cliente seleccionado.');
   return item;
 }
