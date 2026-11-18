@@ -1,5 +1,5 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+const { app, BrowserWindow } = require("electron");
+const path = require("path");
 
 let mainWindow;
 
@@ -9,32 +9,34 @@ function createWindow() {
     height: 960,
     minWidth: 900,
     minHeight: 650,
-    title: 'IA para Todos',
+    title: "IA para Todos",
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: true
-    }
+      sandbox: true,
+    },
   });
 
-  mainWindow.on('closed', () => {
+  mainWindow.on("closed", () => {
     mainWindow = null;
   });
 
   if (app.isPackaged) {
-    mainWindow.loadFile(path.join(__dirname, '..', 'build', 'index.html'));
+    mainWindow.loadFile(path.join(__dirname, "..", "build", "index.html"));
   } else {
-    mainWindow.loadURL(process.env.ELECTRON_START_URL || 'http://localhost:3000');
+    mainWindow.loadURL(
+      process.env.ELECTRON_START_URL || "http://localhost:3000",
+    );
   }
 }
 
 app.whenReady().then(() => {
   createWindow();
-  app.on('activate', () => {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
 });

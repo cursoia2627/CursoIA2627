@@ -1,20 +1,22 @@
-require('dotenv').config();
+require("dotenv").config();
 
 const env = {
   port: Number(process.env.PORT || 4000),
-  nodeEnv: process.env.NODE_ENV || 'development',
+  nodeEnv: process.env.NODE_ENV || "development",
   dbHost: process.env.DB_HOST,
   dbPort: Number(process.env.DB_PORT || 3306),
   dbUser: process.env.DB_USER,
   dbPassword: process.env.DB_PASSWORD,
-  dbName: process.env.DB_NAME || 'cursoia',
-  dbSsl: process.env.DB_SSL !== 'false',
+  dbName: process.env.DB_NAME || "cursoia",
+  dbSsl: process.env.DB_SSL !== "false",
   dbSslCa: process.env.DB_SSL_CA,
-  corsOrigins: (process.env.CORS_ORIGIN || 'http://localhost:3000')
-    .split(',').map((origin) => origin.trim()).filter(Boolean),
+  corsOrigins: (process.env.CORS_ORIGIN || "http://localhost:3000")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
 };
 
-for (const key of ['dbHost', 'dbUser', 'dbPassword']) {
+for (const key of ["dbHost", "dbUser", "dbPassword"]) {
   if (!env[key]) throw new Error(`Falta la variable obligatoria ${key}.`);
 }
 module.exports = env;

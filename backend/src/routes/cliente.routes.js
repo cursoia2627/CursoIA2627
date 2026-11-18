@@ -1,1 +1,10 @@
-const r=require('express').Router();const c=require('../controllers/cliente.controller');const w=require('../middleware/async-handler');const{requireRole,requireSelfOrAdmin}=require('../middleware/auth');r.get('/',w(c.list));r.get('/:id',requireSelfOrAdmin(),w(c.get));r.post('/',requireRole('Administrador'),w(c.create));r.put('/:id',requireSelfOrAdmin(),w(c.update));r.delete('/:id',requireRole('Administrador'),w(c.remove));module.exports=r;
+const r = require("express").Router();
+const c = require("../controllers/cliente.controller");
+const w = require("../middleware/async-handler");
+const { requireRole, requireSelfOrAdmin } = require("../middleware/auth");
+r.get("/", w(c.list));
+r.get("/:id", requireSelfOrAdmin(), w(c.get));
+r.post("/", requireRole("Administrador"), w(c.create));
+r.put("/:id", requireSelfOrAdmin(), w(c.update));
+r.delete("/:id", requireRole("Administrador"), w(c.remove));
+module.exports = r;
