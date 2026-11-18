@@ -84,4 +84,17 @@ curl -X PATCH http://localhost:4000/api/consultas/1 \
 curl "http://localhost:4000/api/consultas?estado_respuesta=pendiente&limit=10&offset=0"
 ```
 
-La API no implementa autenticación. Añadid autenticación/autorización antes de publicar escrituras en internet. El SQL indica que el backend notificará a Zapier al insertar consultas; esa integración externa no está incluida en este CRUD.
+Los endpoints CRUD requieren una sesión JWT; configurad un JWT_SECRET persistente antes de desplegar. El SQL indica que el backend notificará a Zapier al insertar consultas; esa integración externa no está incluida en este CRUD.
+
+
+## Acceso y clasificación del Equipo 2
+
+Al iniciar, la API aplica una migración incremental: crea los catálogos fijos de categorías y urgencias, añade sus claves a `atencion_cliente`, crea `recomendaciones` y las vistas `conversaciones_categoria` y `conversaciones_urgencia`. No se debe volver a ejecutar `database/cursoia.sql` sobre una base con datos: ese archivo recrea tablas.
+
+Las consultas históricas que sigan en «Sin clasificar» reciben una clasificación por reglas de texto al arrancar. La tarea se puede repetir; solo cambia las filas que aún tengan el valor «Sin clasificar». Las filas sin coincidencia se conservan en esa opción. Las claves foráneas limitan las clasificaciones a los catálogos.
+
+La misma migración añade `clientes.password_hash` y guarda hashes scrypt. La contraseña inicial es el nombre de pila en minúsculas (por ejemplo, Antonio Hernández inicia con `antonio`); las altas y ediciones de clientes mantienen esa regla. Se inicia sesión con el correo del cliente. En la aplicación, el rol `Administrador` es el único que puede acceder a una sección identificada como `dashboard`; el rol se consulta desde la base de datos en las peticiones autenticadas.
+
+El backend firma JWT HS256 en una cookie `HttpOnly` con caducidad de ocho horas. Las sesiones se registran para poder invalidarlas al cerrar sesión. Define un `JWT_SECRET` persistente y aleatorio en `backend/.env` antes de desplegar; sin él, se genera un secreto temporal y las sesiones dejarán de validar al reiniciar el backend. La migración asigna el rol `Administrador` a Andrea Martinez, Antonio Hernández y Faustino Martinez, y deja al resto como `Cliente`. La API y la interfaz limitan clientes, consultas y avatares al registro propio de cada cliente; administración conserva el acceso global. Los clientes pueden crear consultas propias, pero no editarlas ni borrarlas. No vuelvas a ejecutar el SQL inicial sobre una base con datos.
+
+Los endpoints autenticados `GET /api/consultas/catalogos`, `GET /api/consultas/resumen/categoria` y `GET /api/consultas/resumen/urgencia` exponen catálogos y recuentos desde las vistas.

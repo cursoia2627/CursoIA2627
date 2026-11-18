@@ -1,11 +1,13 @@
-// Cliente HTTP compartido para el CRUD. Ajusta REACT_APP_API_URL en frontend/.env.
-export const API_URL = (process.env.REACT_APP_API_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+// Cliente HTTP compartido para el CRUD.
+import { API_BASE } from './url';
+export const API_URL = API_BASE;
 
 export async function api(path, options = {}) {
   let response;
   try {
     response = await fetch(`${API_URL}${path}`, {
       ...options,
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json', ...options.headers },
       cache: 'no-store',
     });
@@ -15,6 +17,7 @@ export async function api(path, options = {}) {
   if (response.status === 204) return null;
   const body = await response.json().catch(() => null);
   if (!response.ok) {
+    if (response.status === 401) window.dispatchEvent(new Event('auth:expired'));
     const msg = body?.error?.message || `Error HTTP ${response.status}`;
     const details = body?.error?.details || body?.error?.issues;
     throw new Error(Array.isArray(details) && details.length ? `${msg} ${details.map(x => x.message).join('; ')}` : msg);

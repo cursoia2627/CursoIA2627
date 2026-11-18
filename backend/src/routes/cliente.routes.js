@@ -1,14 +1,1 @@
-const router = require('express').Router();
-const controller = require('../controllers/cliente.controller');
-const asyncHandler = require('../middleware/async-handler');
-// Devuelve clientes paginados para mostrar el listado.
-router.get('/', asyncHandler(controller.list));
-// Devuelve la ficha de un cliente usando su ID.
-router.get('/:id', asyncHandler(controller.get));
-// Crea una ficha de cliente y devuelve el registro creado.
-router.post('/', asyncHandler(controller.create));
-// Reemplaza los datos editables de la ficha indicada.
-router.put('/:id', asyncHandler(controller.update));
-// Elimina el cliente y, por la clave foránea, sus consultas asociadas.
-router.delete('/:id', asyncHandler(controller.remove));
-module.exports = router;
+const r=require('express').Router();const c=require('../controllers/cliente.controller');const w=require('../middleware/async-handler');const{requireRole,requireSelfOrAdmin}=require('../middleware/auth');r.get('/',w(c.list));r.get('/:id',requireSelfOrAdmin(),w(c.get));r.post('/',requireRole('Administrador'),w(c.create));r.put('/:id',requireSelfOrAdmin(),w(c.update));r.delete('/:id',requireRole('Administrador'),w(c.remove));module.exports=r;

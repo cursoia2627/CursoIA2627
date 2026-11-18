@@ -1,14 +1,15 @@
 // Public address only. Provider credentials belong in the backend.
-const BASE = (process.env.REACT_APP_API_URL || 'http://localhost:4000').replace(/\/+$/, '');
+import { API_BASE } from '../api/url';
+const BASE = API_BASE;
 async function request(path, options = {}) {
   let response;
-  try { response = await fetch(BASE + path, { ...options, headers: { 'Content-Type': 'application/json' } }); } catch (error) {
+  try { response = await fetch(BASE + path, { ...options, credentials: 'include', headers: { 'Content-Type': 'application/json' } }); } catch (error) {
     if (error.name === 'AbortError') throw error;
     throw new Error('No se puede conectar con el servidor. Comprueba que el backend esté arrancado.');
   }
   let payload;
   try { payload = await response.json(); } catch { throw new Error('La API no devolvió JSON válido. Comprueba la dirección del backend.'); }
-  if (!response.ok) throw new Error(payload?.error?.message || `Error de API (${response.status}).`);
+  if (!response.ok) { if (response.status === 401) window.dispatchEvent(new Event('auth:expired')); throw new Error(payload?.error?.message || `Error de API (${response.status}).`); }
   if (!payload || !Object.prototype.hasOwnProperty.call(payload, 'data')) throw new Error('Formato de respuesta de API no válido.');
   return payload.data;
 }

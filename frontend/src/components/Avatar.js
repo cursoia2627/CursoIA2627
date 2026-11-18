@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { UserRound, Sparkles, RefreshCw, ImagePlus, Check } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:4000/api';
+import { API_BASE, API_ROOT } from '../api/url';
+const API_URL = API_BASE;
 
 async function leerRespuesta(response) {
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.error?.message || body.error || `Error HTTP ${response.status}`);
+  if (!response.ok) { if (response.status === 401) window.dispatchEvent(new Event('auth:expired')); throw new Error(body.error?.message || body.error || `Error HTTP ${response.status}`); }
   return body.data ?? body;
 }
 
@@ -26,7 +27,7 @@ export default function Avatar() {
     let activo = true;
     async function cargarClientes() {
       try {
-        const result = await leerRespuesta(await fetch(`${API_URL}/clientes?limit=100&offset=0`));
+        const result = await leerRespuesta(await fetch(`${API_URL}/clientes?limit=100&offset=0`, { credentials: 'include' }));
         const lista = result.items || [];
         if (!activo) return;
         setClientes(lista);
@@ -49,11 +50,11 @@ export default function Avatar() {
       }
       setCargandoAvatar(true); setAviso('');
       try {
-        const avatar = await leerRespuesta(await fetch(`${API_URL}/clientes/${clienteId}/avatar`, { cache: 'no-store' }));
+        const avatar = await leerRespuesta(await fetch(`${API_URL}/clientes/${clienteId}/avatar`, { cache: 'no-store', credentials: 'include' }));
         if (!activo) return;
         setDescripcion(avatar.descripcion || '');
         setTieneImagen(Boolean(avatar.tieneImagen));
-        setImagenUrl(avatar.imagenUrl ? `${API_URL.replace(/\/api$/, '')}${avatar.imagenUrl}` : '');
+        setImagenUrl(avatar.imagenUrl ? `${API_ROOT}${avatar.imagenUrl}` : '');
         setVersionImagen(Date.now());
       } catch (error) {
         if (activo) { setDescripcion(''); setTieneImagen(false); setImagenUrl(''); setAviso(error.message); setTipoAviso('error'); }
@@ -72,6 +73,7 @@ export default function Avatar() {
     try {
       const result = await leerRespuesta(await fetch(`${API_URL}/clientes/${clienteId}/avatar/generar`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ descripcion: descripcion.trim() })
       }));

@@ -1,14 +1,1 @@
-const router = require('express').Router();
-const controller = require('../controllers/consulta.controller');
-const asyncHandler = require('../middleware/async-handler');
-// Lista consultas con datos básicos del cliente y admite filtros/paginación.
-router.get('/', asyncHandler(controller.list));
-// Devuelve el detalle de una consulta usando su ID.
-router.get('/:id', asyncHandler(controller.get));
-// Registra una nueva consulta asociada a un cliente.
-router.post('/', asyncHandler(controller.create));
-// Modifica uno o varios campos de consulta, respuesta o estado.
-router.patch('/:id', asyncHandler(controller.update));
-// Elimina la consulta indicada.
-router.delete('/:id', asyncHandler(controller.remove));
-module.exports = router;
+const r=require('express').Router(),c=require('../controllers/consulta.controller'),w=require('../middleware/async-handler'),{requireRole}=require('../middleware/auth');r.get('/',w(c.list));r.get('/catalogos',w(c.catalogos));r.get('/resumen/categoria',w(c.resumenCategoria));r.get('/resumen/urgencia',w(c.resumenUrgencia));r.get('/:id',w(c.get));r.post('/',w(c.create));r.patch('/:id',requireRole('Administrador'),w(c.update));r.delete('/:id',requireRole('Administrador'),w(c.remove));module.exports=r;

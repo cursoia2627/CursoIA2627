@@ -26,7 +26,7 @@ function errorHandler(error, req, res, next) {
     status = 400; code = 'CONSTRAINT_VIOLATION'; message = 'Los datos incumplen una regla de la base de datos.';
   }
   if (error.code === 'ER_NO_REFERENCED_ROW_2') {
-    status = 400; code = 'INVALID_REFERENCE'; message = 'El cliente indicado no existe.';
+    status = 400; code = 'INVALID_REFERENCE'; message = 'El cliente o la categoría/urgencia indicada no existe en sus listas.';
   }
   const payload = { error: { code, message } };
   if (error.details) payload.error.details = error.details;

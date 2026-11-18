@@ -1,39 +1,9 @@
-const pool = require('../db/pool');
-
-async function list({ limit, offset, estado_respuesta, id }) {
-  const filters = [];
-  const values = [];
-  if (estado_respuesta) { values.push(estado_respuesta); filters.push('a.estado_respuesta=?'); }
-  if (id) { values.push(id); filters.push('a.id=?'); }
-  const where = filters.length ? `WHERE ${filters.join(' AND ')}` : '';
-  const [items] = await pool.query(`SELECT a.*, c.nombre, c.apellido, c.email FROM atencion_cliente a
-    JOIN clientes c ON c.id_cliente=a.id ${where}
-    ORDER BY a.fecha_creacion DESC, a.id_consulta DESC LIMIT ? OFFSET ?`, [...values, limit, offset]);
-  const [count] = await pool.query(`SELECT COUNT(*) AS total FROM atencion_cliente a ${where}`, values);
-  return { items, total: count[0].total, limit, offset };
-}
-async function get(id) {
-  const [rows] = await pool.query(`SELECT a.*, c.nombre, c.apellido, c.email FROM atencion_cliente a
-    JOIN clientes c ON c.id_cliente=a.id WHERE a.id_consulta=?`, [id]);
-  return rows[0] || null;
-}
-async function create({ id, Consulta }) {
-  const [result] = await pool.query('INSERT INTO atencion_cliente (id, `Consulta`) VALUES (?, ?)', [id, Consulta]);
-  return get(result.insertId);
-}
-async function update(id, changes) {
-  const columns = { Consulta: '`Consulta`', Respuesta: '`Respuesta`', estado_respuesta: 'estado_respuesta' };
-  const entries = Object.entries(changes);
-  const set = entries.map(([key]) => `${columns[key]}=?`);
-  const values = entries.map(([, value]) => value);
-  if (changes.estado_respuesta === 'respondida') set.push('fecha_respuesta=NOW()');
-  const [result] = await pool.query(
-    `UPDATE atencion_cliente SET ${set.join(', ')} WHERE id_consulta=?`, [...values, id],
-  );
-  return result.affectedRows ? get(id) : null;
-}
-async function remove(id) {
-  const [result] = await pool.query('DELETE FROM atencion_cliente WHERE id_consulta=?', [id]);
-  return result.affectedRows > 0;
-}
-module.exports = { list, get, create, update, remove };
+const pool=require('../db/pool');
+async function list({limit,offset,estado_respuesta,id,id_categoria,id_urgencia},user){const f=[],v=[];if(estado_respuesta){f.push('estado_respuesta=?');v.push(estado_respuesta);}const scopedId=user.Rol==='Administrador'?id:user.id_cliente;if(scopedId){f.push('id=?');v.push(scopedId);}if(id_categoria){f.push('id_categoria=?');v.push(id_categoria);}if(id_urgencia){f.push('id_urgencia=?');v.push(id_urgencia);}const w=f.length?'WHERE '+f.join(' AND '):'';const[items]=await pool.query('SELECT * FROM conversaciones_categoria '+w+' ORDER BY fecha_creacion DESC,id_consulta DESC LIMIT ? OFFSET ?',[...v,limit,offset]);const[count]=await pool.query('SELECT COUNT(*) total FROM atencion_cliente '+w,v);return{items,total:count[0].total,limit,offset};}
+async function get(id,user){const own=user.Rol==='Administrador'?'':' AND id=?';const args=own?[id,user.id_cliente]:[id];const[r]=await pool.query('SELECT * FROM conversaciones_categoria WHERE id_consulta=?'+own,args);return r[0]||null;}
+async function catalogos(){const[[categorias],[urgencias]]=await Promise.all([pool.query('SELECT id_categoria,nombre FROM categoria ORDER BY id_categoria'),pool.query('SELECT id_urgencia,nombre FROM urgencia ORDER BY id_urgencia')]);return{categorias,urgencias};}
+async function resumen(tipo,user){const cat=tipo==='categoria';const q=cat?(user.Rol==='Administrador'?'SELECT c.id_categoria AS id,c.nombre,COUNT(v.id_consulta) total FROM categoria c LEFT JOIN conversaciones_categoria v ON v.id_categoria=c.id_categoria GROUP BY c.id_categoria,c.nombre ORDER BY c.id_categoria':'SELECT c.id_categoria AS id,c.nombre,COUNT(v.id_consulta) total FROM categoria c LEFT JOIN conversaciones_categoria v ON v.id_categoria=c.id_categoria AND v.id=? GROUP BY c.id_categoria,c.nombre ORDER BY c.id_categoria'):(user.Rol==='Administrador'?'SELECT u.id_urgencia AS id,u.nombre,COUNT(v.id_consulta) total FROM urgencia u LEFT JOIN conversaciones_urgencia v ON v.id_urgencia=u.id_urgencia GROUP BY u.id_urgencia,u.nombre ORDER BY u.id_urgencia':'SELECT u.id_urgencia AS id,u.nombre,COUNT(v.id_consulta) total FROM urgencia u LEFT JOIN conversaciones_urgencia v ON v.id_urgencia=u.id_urgencia AND v.id=? GROUP BY u.id_urgencia,u.nombre ORDER BY u.id_urgencia');const[r]=await pool.query(q,user.Rol==='Administrador'?[]:[user.id_cliente]);return r;}
+async function create(data,user){const id=user.Rol==='Administrador'?data.id:user.id_cliente;const[r]=await pool.query('INSERT INTO atencion_cliente(id,Consulta,id_categoria,id_urgencia) VALUES(?,?,?,?)',[id,data.Consulta,data.id_categoria??7,data.id_urgencia??4]);return get(r.insertId,user);}
+async function update(id,changes,user){const cols={Consulta:'Consulta',Respuesta:'Respuesta',estado_respuesta:'estado_respuesta',id_categoria:'id_categoria',id_urgencia:'id_urgencia'},e=Object.entries(changes),s=e.map(x=>cols[x[0]]+'=?'),v=e.map(x=>x[1]),own=user.Rol==='Administrador'?'':' AND id=?';if(changes.estado_respuesta==='respondida')s.push('fecha_respuesta=NOW()');const args=[...v,id];if(own)args.push(user.id_cliente);const[r]=await pool.query('UPDATE atencion_cliente SET '+s.join(',')+' WHERE id_consulta=?'+own,args);return r.affectedRows?get(id,user):null;}
+async function remove(id,user){const own=user.Rol==='Administrador'?'':' AND id=?',args=own?[id,user.id_cliente]:[id];const[r]=await pool.query('DELETE FROM atencion_cliente WHERE id_consulta=?'+own,args);return r.affectedRows>0;}
+module.exports={list,get,create,update,remove,catalogos,resumen};
