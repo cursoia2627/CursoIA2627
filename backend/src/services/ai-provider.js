@@ -155,4 +155,42 @@ function createProvider(
     return text;
   };
 }
-module.exports = { createProvider, buildInput, loadKnowledge };
+
+function buildClassificationRules(catalogos) {
+  const categorias = catalogos.categorias
+    .map((c) => c.nombre)
+    .join(", ");
+
+  const urgencias = catalogos.urgencias
+    .map((u) => u.nombre)
+    .join(", ");
+
+  return `
+Además de responder al cliente, debes clasificar su consulta.
+
+Categorías permitidas: ${categorias}
+Urgencias permitidas: ${urgencias}
+
+Devuelve exclusivamente un objeto JSON válido con:
+{
+  "respuesta": "Texto de atención al cliente",
+  "categoria": "Una categoría permitida",
+  "urgencia": "Una urgencia permitida"
+}
+
+Reglas:
+- Responde al cliente en español.
+- Conserva las reglas originales de SofíaIA.
+- Utiliza exclusivamente los valores de los catálogos.
+- Si no puedes determinar la categoría, usa "Sin clasificar".
+- Si no puedes determinar la urgencia, usa "Sin clasificar".
+- No añadas explicaciones fuera del JSON.
+`;
+}
+
+module.exports = {
+  createProvider,
+  buildInput,
+  loadKnowledge,
+  buildClassificationRules
+};
