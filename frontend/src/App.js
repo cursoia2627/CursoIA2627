@@ -19,6 +19,7 @@ import CookieConsent from "./components/CookieConsent";
 import Login from "./components/Login";
 import { conversacionesIniciales } from "./data/demo";
 import { authApi } from "./services/authApi";
+import { API_BASE, API_ROOT } from "./api/url";
 import "./styles.css";
 const tabs = [
   { id: "clientes", label: "Clientes", icon: Users },
@@ -47,6 +48,7 @@ export default function App() {
     [tab, setTab] = useState("clientes"),
     [menu, setMenu] = useState(false),
     [dark, setDark] = useState(false),
+    [avatarThumb, setAvatarThumb] = useState(""),
     [conversaciones, setConversaciones] = useLocalStorage(
       "iat-conversaciones",
       conversacionesIniciales,
@@ -71,6 +73,67 @@ export default function App() {
       window.removeEventListener("auth:expired", expire);
     };
   }, []);
+  useEffect(() => {
+    const clientId = user?.id_cliente;
+    if (!clientId) {
+      setAvatarThumb("");
+      return undefined;
+    }
+    let active = true;
+    let latestRequest = 0;
+    let objectUrl = "";
+    async function loadAvatar() {
+      const requestId = ++latestRequest;
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+        objectUrl = "";
+      }
+      if (active) setAvatarThumb("");
+      try {
+        const response = await fetch(`${API_BASE}/clientes/${clientId}/avatar`, {
+          credentials: "include",
+          cache: "no-store",
+        });
+        const body = await response.json().catch(() => ({}));
+        if (response.status === 401) {
+          window.dispatchEvent(new Event("auth:expired"));
+          return;
+        }
+        if (!response.ok) return;
+        const avatar = body.data ?? body;
+        if (!avatar.tieneImagen || !avatar.imagenUrl) return;
+        const imageResponse = await fetch(`${API_ROOT}${avatar.imagenUrl}`, {
+          credentials: "include",
+          cache: "no-store",
+        });
+        if (imageResponse.status === 401) {
+          window.dispatchEvent(new Event("auth:expired"));
+          return;
+        }
+        if (!imageResponse.ok) return;
+        const image = await imageResponse.blob();
+        if (!image.type.startsWith("image/")) return;
+        const nextUrl = URL.createObjectURL(image);
+        if (active && requestId === latestRequest) {
+          objectUrl = nextUrl;
+          setAvatarThumb(nextUrl);
+        } else {
+          URL.revokeObjectURL(nextUrl);
+        }
+      } catch {}
+    }
+    const onAvatarUpdated = (event) => {
+      if (!event.detail?.id || String(event.detail.id) === String(clientId))
+        loadAvatar();
+    };
+    loadAvatar();
+    window.addEventListener("avatar:updated", onAvatarUpdated);
+    return () => {
+      active = false;
+      window.removeEventListener("avatar:updated", onAvatarUpdated);
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [user?.id_cliente]);
   async function logout() {
     try {
       await authApi.logout();
@@ -149,7 +212,18 @@ export default function App() {
             <div className="hero-wave wave-two" />
             <div className="hero-actions">
               <span className="auth-user">
-                <CircleUserRound size={20} />
+                {avatarThumb ? (
+                  <img
+                    className="auth-user-avatar"
+                    src={avatarThumb}
+                    alt={"Avatar de " + user.nombre}
+                  />
+                ) : (
+                  <CircleUserRound
+                    className="auth-user-fallback"
+                    size={20}
+                  />
+                )}
                 {user.nombre} · {user.Rol}
               </span>
               <button
@@ -202,3 +276,6 @@ export default function App() {
     </div>
   );
 }
+
+
+
