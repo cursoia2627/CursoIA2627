@@ -60,7 +60,7 @@ function createProvider(
     knowledge = loadKnowledge(config.knowledgeFile),
   } = {},
 ) {
-  return async function answer(job, history) {
+  return async function answer(job, history, catalogos = null) {
     let response;
     try {
       response = await fetchImpl(
@@ -73,6 +73,7 @@ function createProvider(
           },
           signal: AbortSignal.timeout(config.timeoutMs),
           body: JSON.stringify({
+
             systemInstruction: {
               parts: [
                 {
@@ -80,20 +81,34 @@ function createProvider(
                     RULES +
                     "\nInformación de empresa aprobada:\n" +
                     (knowledge ||
-                      "No se ha configurado información de empresa."),
-                },
-              ],
+                      "No se ha configurado información de empresa.") +
+                    (catalogos
+                      ? "\n\n" + buildClassificationRules(catalogos)
+                      : "")
+                }
+              ]
             },
+
+
+
             contents: [
               {
                 role: "user",
                 parts: [{ text: buildInput(job, history, config) }],
               },
             ],
+
+
             generationConfig: {
               maxOutputTokens: config.maxOutputTokens,
               candidateCount: 1,
+              ...(catalogos
+                ? { responseMimeType: "application/json" }
+                : {})
             },
+
+
+
           }),
         },
       );
@@ -152,7 +167,12 @@ function createProvider(
         { code: "AI_INCOMPLETE_RESPONSE" },
       );
     }
-    return text;
+
+    return catalogos
+      ? parseStructuredResponse(text)
+      : text;
+
+
   };
 }
 
@@ -188,9 +208,44 @@ Reglas:
 `;
 }
 
+function parseStructuredResponse(text) {
+  let result;
+
+  try {
+    result = JSON.parse(text);
+  } catch {
+    throw Object.assign(
+      new Error("Gemini no ha devuelto un JSON válido."),
+      { code: "AI_INVALID_JSON" }
+    );
+  }
+
+  if (
+    !result ||
+    typeof result !== "object" ||
+    Array.isArray(result) ||
+    typeof result.respuesta !== "string" ||
+    !result.respuesta.trim() ||
+    typeof result.categoria !== "string" ||
+    typeof result.urgencia !== "string"
+  ) {
+    throw Object.assign(
+      new Error("La respuesta de Gemini no tiene la estructura requerida."),
+      { code: "AI_INVALID_STRUCTURE" }
+    );
+  }
+
+  return {
+    respuesta: result.respuesta.trim(),
+    categoria: result.categoria.trim(),
+    urgencia: result.urgencia.trim()
+  };
+}
+
 module.exports = {
   createProvider,
   buildInput,
   loadKnowledge,
-  buildClassificationRules
+  buildClassificationRules,
+  parseStructuredResponse
 };

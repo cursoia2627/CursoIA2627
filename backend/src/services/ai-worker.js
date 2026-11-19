@@ -1,5 +1,21 @@
 const { createHash } = require("node:crypto");
 
+const { resolveClassification } = require("./ai-classification");
+
+
+async function loadCatalogos(connection) {
+  const [categorias] = await connection.execute(
+    "SELECT id_categoria, nombre FROM categoria ORDER BY id_categoria"
+  );
+
+  const [urgencias] = await connection.execute(
+    "SELECT id_urgencia, nombre FROM urgencia ORDER BY id_urgencia"
+  );
+
+  return { categorias, urgencias };
+}
+
+
 function createWorker({ pool, config, answer, database, logger = console }) {
   const lockName =
     "sofia-ai-" +
@@ -46,19 +62,51 @@ function createWorker({ pool, config, answer, database, logger = console }) {
         WHERE id=? AND id_consulta<? ORDER BY id_consulta DESC LIMIT ?`,
         [job.id, job.id_consulta, config.historyLimit],
       );
-      const text = await answer(job, history);
+
+
+      const catalogos = await loadCatalogos(connection);
+
+      const resultado = await answer(job, history, catalogos);
+
+      const clasificacion = resolveClassification(resultado, catalogos);
+
+      const text = clasificacion.respuesta;
+
+
+
       // Deleted or manually changed rows must never be overwritten.
-      await connection.query(
-        `UPDATE atencion_cliente SET Respuesta=?, estado_respuesta='respondida', fecha_respuesta=NOW()
-        WHERE id_consulta=? AND estado_respuesta='procesando' AND Consulta=? AND (Respuesta IS NULL OR Respuesta='')`,
-        [text, job.id_consulta, job.Consulta],
+
+
+
+      await connection.execute(
+        `UPDATE atencion_cliente
+        SET Respuesta = ?,
+            id_categoria = ?,
+            id_urgencia = ?,
+            estado_respuesta = 'respondida',
+            fecha_respuesta = NOW()
+        WHERE id_consulta = ?
+          AND estado_respuesta = 'procesando'
+          AND Consulta = ?
+          AND (Respuesta IS NULL OR Respuesta = '')`,
+        [
+          text,
+          clasificacion.id_categoria,
+          clasificacion.id_urgencia,
+          job.id_consulta,
+          job.Consulta
+        ]
       );
+
+
+
+
     } catch (error) {
       // No questions, responses, SQL, credentials or raw provider errors in logs.
       logger.error("Procesamiento IA fallido.", {
         consultaId: job?.id_consulta,
         code: /^AI_[A-Z0-9_]+$/.test(error.code || "")
-          ? error
+          ? error.code
           : "AI_INTERNAL_ERROR",
       });
       if (claimedJob && connection && locked) {
