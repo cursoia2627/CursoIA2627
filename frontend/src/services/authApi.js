@@ -14,15 +14,21 @@ async function request(path, options = {}) {
   if (r.status === 204) return null;
   const b = await r.json().catch(() => ({}));
   if (!r.ok)
-    throw new Error(b?.error?.message || "No se pudo iniciar la sesión.");
+    throw new Error(b?.error?.message || "No se pudo completar la operación.");
   return b.data;
 }
 export const authApi = {
-  login: (email, password) =>
+  login: (usuario, password) =>
     request("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ usuario, password }),
+    }),
+  changePassword: (usuario, passwordActual, passwordNueva) =>
+    request("/auth/change-password", {
+      method: "POST",
+      body: JSON.stringify({ usuario, passwordActual, passwordNueva }),
     }),
   session: () => request("/auth/session"),
   logout: () => request("/auth/logout", { method: "POST" }),
 };
+

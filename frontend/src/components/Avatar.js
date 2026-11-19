@@ -120,6 +120,7 @@ export default function Avatar() {
       setTieneImagen(true);
       setImagenUrl(`${API_URL}/clientes/${clienteId}/avatar/imagen`);
       setVersionImagen(Date.now());
+      window.dispatchEvent(new CustomEvent("avatar:updated", { detail: { id: clienteId } }));
       setAviso(
         result.mensaje || "Avatar generado y guardado correctamente en MySQL.",
       );
@@ -281,3 +282,6 @@ export default function Avatar() {
     </section>
   );
 }
+
+
+
