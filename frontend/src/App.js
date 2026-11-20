@@ -10,11 +10,14 @@ import {
   Info,
   CircleUserRound,
   LogOut,
+  LayoutDashboard,
+  Eye,
 } from "lucide-react";
 import Brand from "./components/Brand";
 import Clientes from "./components/Clientes";
 import ChatBot from "./components/ChatBot";
 import Avatar from "./components/Avatar";
+import Dashboard from "./components/Dashboard";
 import CookieConsent from "./components/CookieConsent";
 import Login from "./components/Login";
 import { conversacionesIniciales } from "./data/demo";
@@ -25,6 +28,7 @@ const tabs = [
   { id: "clientes", label: "Clientes", icon: Users },
   { id: "chat", label: "Chat Bot", icon: MessageSquare },
   { id: "avatar", label: "Avatar", icon: UserRound },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
 ];
 function useLocalStorage(key, initial) {
   const [value, setValue] = useState(() => {
@@ -53,6 +57,8 @@ export default function App() {
       "iat-conversaciones",
       conversacionesIniciales,
     );
+  const [sidebarOculta, setSidebarOculta] = useState(false);
+  const [visitas, setVisitas] = useLocalStorage("iat-visitas-dashboard", 0);
   useEffect(() => {
     let active = true;
     authApi
@@ -142,10 +148,12 @@ export default function App() {
     setTab("clientes");
   }
   function canAccess(section) {
-    return section !== "dashboard" || user?.Rol === "Administrador";
+    return tabs.some((t) => t.id === section);
   }
   function changeTab(next) {
     if (!canAccess(next)) return;
+    if (next === "dashboard" && tab !== "dashboard")
+      setVisitas((v) => Number(v || 0) + 1);
     setTab(next);
     setMenu(false);
   }
@@ -160,7 +168,7 @@ export default function App() {
   return (
     <div className={"site " + tab + "-theme " + (dark ? "dark" : "")}>
       <div className="app-shell">
-        <aside className={"sidebar " + (menu ? "open" : "")}>
+        <aside className={"sidebar " + (menu ? "open " : "") + (sidebarOculta ? "collapsed" : "")}>
           <Brand />
           <nav aria-label="Menú principal">
             {visibleTabs.map((t) => (
@@ -185,6 +193,15 @@ export default function App() {
         </aside>
         <main className="main">
           <header className="hero">
+            <button
+              type="button"
+              className="sidebar-toggle"
+              onClick={() => setSidebarOculta((v) => !v)}
+              aria-label={sidebarOculta ? "Mostrar menú lateral" : "Ocultar menú lateral"}
+              title={sidebarOculta ? "Mostrar menú lateral" : "Ocultar menú lateral"}
+            >
+              <Menu size={19} />
+            </button>
             <div className="mobile-bar">
               <Brand small />
               <button
@@ -269,6 +286,53 @@ export default function App() {
               />
             )}
             {tab === "avatar" && <Avatar />}
+            {tab === "dashboard" && user.Rol === "Administrador" && (
+              <Dashboard visitas={visitas} />
+            )}
+            {tab === "dashboard" && user.Rol !== "Administrador" && (
+              <section className="dashboard">
+                <div className="dash-heading">
+                  <LayoutDashboard size={27} />
+                  <div>
+                    <h2>Mi Dashboard</h2>
+                    <p>Bienvenido a tu panel personal, {user.nombre}.</p>
+                  </div>
+                </div>
+                <div className="dash-stats">
+                  <article className="dash-stat dash-stat-visitas">
+                    <span className="dash-stat-icon">
+                      <Eye size={26} />
+                    </span>
+                    <div>
+                      <h3>Visitas al Dashboard</h3>
+                      <strong>{visitas}</strong>
+                      <small>En este navegador</small>
+                    </div>
+                  </article>
+                  <article className="dash-stat dash-stat-clientes">
+                    <span className="dash-stat-icon">
+                      <CircleUserRound size={26} />
+                    </span>
+                    <div>
+                      <h3>Mi perfil</h3>
+                      <strong>{user.nombre}</strong>
+                      <small>{user.Rol}</small>
+                    </div>
+                  </article>
+                </div>
+                <article className="dash-card">
+                  <h3>
+                    <Info size={22} />
+                    Mi información
+                  </h3>
+                  <p>
+                    Este panel muestra información de tu sesión.
+                    Las estadísticas generales y las herramientas
+                    administrativas están reservadas para los administradores.
+                  </p>
+                </article>
+              </section>
+            )}
           </div>
         </main>
       </div>
@@ -276,6 +340,3 @@ export default function App() {
     </div>
   );
 }
-
-
-
