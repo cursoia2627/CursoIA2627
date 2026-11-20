@@ -1633,3 +1633,19 @@ button:disabled {
 @media(max-width:1080px){.dash-graphs{grid-template-columns:1fr}.dash-types{flex-wrap:wrap}.hero{padding-left:64px}}
 @media(max-width:700px){.dash-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-card{padding:15px}.dash-heading h2{font-size:20px}.dash-donut{width:175px;height:175px}.dash-donut>div{width:105px;height:105px}.dash-contenedor{padding:10px}.dash-subtabs{display:grid;grid-template-columns:1fr 1fr}.dash-subtab{font-size:11px;padding:10px 6px}.dash-subtab svg{width:15px;height:15px}.hero{padding-left:25px}}
 @media(max-width:440px){.dash-stats{grid-template-columns:1fr}.dash-stat{min-height:90px}.dash-types{gap:12px}}
+
+/* Gráficas del Dashboard */
+.grafica-barras{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));align-items:end;gap:10px;min-height:220px;padding:12px 6px 4px;border-bottom:1px solid #e9eaf0}
+.grafica-barra-col{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.grafica-barra-valor{font-size:12px;font-weight:700;color:#202636}
+.grafica-barra-pista{width:100%;max-width:44px;height:145px;display:flex;align-items:flex-end;justify-content:center;background:#f7f8fa;border-radius:8px 8px 4px 4px;overflow:hidden}
+.grafica-barra-relleno{width:100%;border-radius:8px 8px 4px 4px;transition:height .25s ease}
+.grafica-barra-etiqueta{font-size:11px;line-height:1.25;text-align:center;color:#455064;word-break:break-word}
+.grafica-leyenda-horizontal{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:14px;font-size:12px}
+.grafica-leyenda-item{display:inline-flex;align-items:center;gap:6px}
+.grafica-circular{width:205px;height:205px;flex-shrink:0;border-radius:50%;border:1px solid #e9eaf0}
+.dark .grafica-barras{border-color:#374255}
+.dark .grafica-barra-valor{color:#f6f7fb}
+.dark .grafica-barra-pista{background:#334055}
+.dark .grafica-barra-etiqueta{color:#cbd5e1}
+@media(max-width:700px){.grafica-circular{width:175px;height:175px}}
