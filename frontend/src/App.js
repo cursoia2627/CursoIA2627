@@ -11,7 +11,6 @@ import {
   CircleUserRound,
   LogOut,
   LayoutDashboard,
-  Eye,
 } from "lucide-react";
 import Brand from "./components/Brand";
 import Clientes from "./components/Clientes";
@@ -148,7 +147,10 @@ export default function App() {
     setTab("clientes");
   }
   function canAccess(section) {
-    return tabs.some((t) => t.id === section);
+    return (
+      tabs.some((t) => t.id === section) &&
+      (section !== "dashboard" || user?.Rol === "Administrador")
+    );
   }
   function changeTab(next) {
     if (!canAccess(next)) return;
@@ -165,8 +167,9 @@ export default function App() {
     );
   if (!user) return <Login onLogin={setUser} />;
   const visibleTabs = tabs.filter((t) => canAccess(t.id));
+  const activeTab = canAccess(tab) ? tab : "clientes";
   return (
-    <div className={"site " + tab + "-theme " + (dark ? "dark" : "")}>
+    <div className={"site " + activeTab + "-theme " + (dark ? "dark" : "")}>
       <div className="app-shell">
         <aside className={"sidebar " + (menu ? "open " : "") + (sidebarOculta ? "collapsed" : "")}>
           <Brand />
@@ -174,7 +177,7 @@ export default function App() {
             {visibleTabs.map((t) => (
               <button
                 key={t.id}
-                className={"side-link " + (tab === t.id ? "active" : "")}
+                className={"side-link " + (activeTab === t.id ? "active" : "")}
                 onClick={() => changeTab(t.id)}
               >
                 <t.icon size={19} />
@@ -264,10 +267,10 @@ export default function App() {
               {visibleTabs.map((t) => (
                 <button
                   role="tab"
-                  aria-selected={tab === t.id}
+                  aria-selected={activeTab === t.id}
                   key={t.id}
                   className={
-                    "tab tab-" + t.id + " " + (tab === t.id ? "active" : "")
+                    "tab tab-" + t.id + " " + (activeTab === t.id ? "active" : "")
                   }
                   onClick={() => changeTab(t.id)}
                 >
@@ -276,62 +279,18 @@ export default function App() {
                 </button>
               ))}
             </div>
-            {tab === "clientes" && (
+            {activeTab === "clientes" && (
               <Clientes isAdmin={user.Rol === "Administrador"} />
             )}
-            {tab === "chat" && (
+            {activeTab === "chat" && (
               <ChatBot
                 conversaciones={conversaciones}
                 setConversaciones={setConversaciones}
               />
             )}
-            {tab === "avatar" && <Avatar />}
-            {tab === "dashboard" && user.Rol === "Administrador" && (
+            {activeTab === "avatar" && <Avatar />}
+            {activeTab === "dashboard" && user.Rol === "Administrador" && (
               <Dashboard visitas={visitas} />
-            )}
-            {tab === "dashboard" && user.Rol !== "Administrador" && (
-              <section className="dashboard">
-                <div className="dash-heading">
-                  <LayoutDashboard size={27} />
-                  <div>
-                    <h2>Mi Dashboard</h2>
-                    <p>Bienvenido a tu panel personal, {user.nombre}.</p>
-                  </div>
-                </div>
-                <div className="dash-stats">
-                  <article className="dash-stat dash-stat-visitas">
-                    <span className="dash-stat-icon">
-                      <Eye size={26} />
-                    </span>
-                    <div>
-                      <h3>Visitas al Dashboard</h3>
-                      <strong>{visitas}</strong>
-                      <small>En este navegador</small>
-                    </div>
-                  </article>
-                  <article className="dash-stat dash-stat-clientes">
-                    <span className="dash-stat-icon">
-                      <CircleUserRound size={26} />
-                    </span>
-                    <div>
-                      <h3>Mi perfil</h3>
-                      <strong>{user.nombre}</strong>
-                      <small>{user.Rol}</small>
-                    </div>
-                  </article>
-                </div>
-                <article className="dash-card">
-                  <h3>
-                    <Info size={22} />
-                    Mi información
-                  </h3>
-                  <p>
-                    Este panel muestra información de tu sesión.
-                    Las estadísticas generales y las herramientas
-                    administrativas están reservadas para los administradores.
-                  </p>
-                </article>
-              </section>
             )}
           </div>
         </main>
