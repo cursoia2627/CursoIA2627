@@ -70,13 +70,16 @@ CREATE TABLE `atencion_cliente` (
   `estado_respuesta` enum('pendiente','procesando','respondida','error') NOT NULL DEFAULT 'pendiente',
   `fecha_creacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fecha_respuesta` timestamp NULL DEFAULT NULL,
+  `valoracion` tinyint DEFAULT NULL,
   PRIMARY KEY (`id_consulta`),
   KEY `idx_consulta_id` (`id`),
   KEY `idx_consulta_estado` (`estado_respuesta`),
   CONSTRAINT `fk_atencion_cliente_cliente`
     FOREIGN KEY (`id`) REFERENCES `clientes` (`id_cliente`)
     ON DELETE CASCADE
-    ON UPDATE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `chk_atencion_valoracion`
+    CHECK (`valoracion` IN (0, 1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `atencion_cliente` (`id`, `Consulta`, `Respuesta`, `estado_respuesta`) VALUES

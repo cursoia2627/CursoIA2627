@@ -101,7 +101,7 @@ async function initializeDatabase() {
     "UPDATE clientes SET Rol=CASE WHEN id_cliente IN (6,10,11) THEN 'Administrador' ELSE 'Cliente' END",
   );
   await pool.query(
-    "CREATE TABLE IF NOT EXISTS atencion_cliente (id_consulta INT NOT NULL AUTO_INCREMENT PRIMARY KEY,id INT NOT NULL,Consulta TEXT NOT NULL,Respuesta TEXT DEFAULT NULL,estado_respuesta ENUM('pendiente','procesando','respondida','error') NOT NULL DEFAULT 'pendiente',fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,fecha_respuesta TIMESTAMP NULL DEFAULT NULL,id_categoria INT NULL,id_urgencia INT NULL,KEY idx_consulta_id(id),KEY idx_consulta_estado(estado_respuesta),CONSTRAINT fk_atencion_cliente_cliente FOREIGN KEY(id) REFERENCES clientes(id_cliente) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
+    "CREATE TABLE IF NOT EXISTS atencion_cliente (id_consulta INT NOT NULL AUTO_INCREMENT PRIMARY KEY,id INT NOT NULL,Consulta TEXT NOT NULL,Respuesta TEXT DEFAULT NULL,estado_respuesta ENUM('pendiente','procesando','respondida','error') NOT NULL DEFAULT 'pendiente',fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,fecha_respuesta TIMESTAMP NULL DEFAULT NULL,id_categoria INT NULL,id_urgencia INT NULL,valoracion TINYINT NULL,KEY idx_consulta_id(id),KEY idx_consulta_estado(estado_respuesta),CONSTRAINT fk_atencion_cliente_cliente FOREIGN KEY(id) REFERENCES clientes(id_cliente) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
   );
   await pool.query(
     "CREATE TABLE IF NOT EXISTS categoria(id_categoria INT NOT NULL PRIMARY KEY,nombre VARCHAR(80) NOT NULL UNIQUE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
@@ -117,6 +117,17 @@ async function initializeDatabase() {
   );
   await ensureColumn("atencion_cliente", "id_categoria", "INT NULL");
   await ensureColumn("atencion_cliente", "id_urgencia", "INT NULL");
+  await ensureColumn("atencion_cliente", "valoracion", "TINYINT NULL");
+  if (!(await hasConstraint("atencion_cliente", "chk_atencion_valoracion", "CHECK"))) {
+    const [[invalidRatings]] = await pool.query(
+      "SELECT COUNT(*) total FROM atencion_cliente WHERE valoracion IS NOT NULL AND valoracion NOT IN (0,1)",
+    );
+    if (Number(invalidRatings.total))
+      throw new Error("La columna valoracion contiene valores distintos de 0, 1 o NULL.");
+    await pool.query(
+      "ALTER TABLE atencion_cliente ADD CONSTRAINT chk_atencion_valoracion CHECK (valoracion IN (0,1))",
+    );
+  }
   await pool.query(
     "UPDATE atencion_cliente SET id_categoria=7 WHERE id_categoria IS NULL",
   );
@@ -167,10 +178,10 @@ async function initializeDatabase() {
     "CREATE TABLE IF NOT EXISTS login_sessions(jti CHAR(36) NOT NULL PRIMARY KEY,id_cliente INT NOT NULL,expires_at DATETIME NOT NULL,created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,KEY idx_login_sessions_expiration(expires_at),CONSTRAINT fk_login_session_cliente FOREIGN KEY(id_cliente) REFERENCES clientes(id_cliente) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
   );
   await pool.query(
-    "CREATE OR REPLACE VIEW conversaciones_categoria AS SELECT a.id_consulta,a.id,a.Consulta,a.Respuesta,a.estado_respuesta,a.fecha_creacion,a.fecha_respuesta,a.id_categoria,cat.nombre categoria,a.id_urgencia,urg.nombre urgencia,c.nombre nombre,c.apellido apellido,c.email email FROM atencion_cliente a JOIN clientes c ON c.id_cliente=a.id JOIN categoria cat ON cat.id_categoria=a.id_categoria JOIN urgencia urg ON urg.id_urgencia=a.id_urgencia",
+    "CREATE OR REPLACE VIEW conversaciones_categoria AS SELECT a.id_consulta,a.id,a.Consulta,a.Respuesta,a.estado_respuesta,a.fecha_creacion,a.fecha_respuesta,a.valoracion,a.id_categoria,cat.nombre categoria,a.id_urgencia,urg.nombre urgencia,c.nombre nombre,c.apellido apellido,c.email email FROM atencion_cliente a JOIN clientes c ON c.id_cliente=a.id JOIN categoria cat ON cat.id_categoria=a.id_categoria JOIN urgencia urg ON urg.id_urgencia=a.id_urgencia",
   );
   await pool.query(
-    "CREATE OR REPLACE VIEW conversaciones_urgencia AS SELECT a.id_consulta,a.id,a.Consulta,a.Respuesta,a.estado_respuesta,a.fecha_creacion,a.fecha_respuesta,a.id_categoria,cat.nombre categoria,a.id_urgencia,urg.nombre urgencia,c.nombre nombre,c.apellido apellido,c.email email FROM atencion_cliente a JOIN clientes c ON c.id_cliente=a.id JOIN categoria cat ON cat.id_categoria=a.id_categoria JOIN urgencia urg ON urg.id_urgencia=a.id_urgencia",
+    "CREATE OR REPLACE VIEW conversaciones_urgencia AS SELECT a.id_consulta,a.id,a.Consulta,a.Respuesta,a.estado_respuesta,a.fecha_creacion,a.fecha_respuesta,a.valoracion,a.id_categoria,cat.nombre categoria,a.id_urgencia,urg.nombre urgencia,c.nombre nombre,c.apellido apellido,c.email email FROM atencion_cliente a JOIN clientes c ON c.id_cliente=a.id JOIN categoria cat ON cat.id_categoria=a.id_categoria JOIN urgencia urg ON urg.id_urgencia=a.id_urgencia",
   );
   await classifyHistory();
   await seedPasswords();
