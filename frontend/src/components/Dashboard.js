@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { LayoutDashboard, Users, MessageSquare, CheckCircle2, Clock3, Eye, BarChart3, PieChart, Tags, AlertCircle, Lightbulb } from 'lucide-react';
+
 import Recomendaciones from './Recomendaciones';
+import TablaCategorias from './TablaCategorias';
+import TablaUrgencias from './TablaUrgencias';
 import Graficas from './Graficas';
+
 const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 const valores = [20, 31, 26, 33, 36, 46, 39];
 const puntos = valores.map((v, i) => `${30 + i * 90},${195 - v * 3}`).join(' ');
@@ -55,33 +59,30 @@ export default function Dashboard({ visitas = 0 }) {
                     <item.icono size={17} /><span>{item.nombre}</span>
                 </button>)}
             </div>
-            {seccion === 'categorias' && <div className="dash-subcontent">
-                <h3><Tags size={21} /> Conversaciones por categoría</h3>
-                <p>Distribución de las conversaciones por categoría. Datos ilustrativos.</p>
-                <div className="dash-table-scroll">
-                    <table className="dash-detail-table">
-                        <thead><tr><th>Categoría</th><th>Porcentaje</th></tr></thead>
-                        <tbody>{tipos.map(tipo => <tr key={tipo.nombre}>
-                            <td><span className={'dash-dot dash-dot-' + tipo.clase} />{tipo.nombre}</td>
-                            <td>{tipo.porcentaje} %</td>
-                        </tr>)}</tbody>
-                    </table>
+
+
+            {seccion === 'categorias' && (
+                <div className="dash-subcontent">
+                    <TablaCategorias />
                 </div>
-            </div>}
-            {seccion === 'urgencias' && <div className="dash-subcontent">
-                <h3><AlertCircle size={21} /> Conversaciones por urgencia</h3>
-                <p>Clasificación de conversaciones según su prioridad. Datos ilustrativos.</p>
-                <div className="dash-table-scroll">
-                    <table className="dash-detail-table">
-                        <thead><tr><th>Urgencia</th><th>Conversaciones</th></tr></thead>
-                        <tbody>{urgencias.map(item => <tr key={item.nivel}>
-                            <td><span className={'dash-urgencia ' + item.clase}>{item.nivel}</span></td>
-                            <td>{item.cantidad}</td>
-                        </tr>)}</tbody>
-                    </table>
+            )}
+
+
+
+
+            {seccion === 'urgencias' && (
+                <div className="dash-subcontent">
+                    <TablaUrgencias />
                 </div>
-            </div>}
+            )}
+
+
+
+
+
+
             {seccion === 'graficas' && <Graficas />}
+
             {seccion === 'recomendaciones' && <Recomendaciones />}
         </div>
         <article className="dash-card dash-activity">

@@ -52,3 +52,31 @@ export const consultasApi = {
     api(`/consultas/${id}`, { method: "PATCH", body: JSON.stringify(cambios) }),
   eliminar: (id) => api(`/consultas/${id}`, { method: "DELETE" }),
 };
+
+export const dashboardTablasApi = {
+  categorias: () => api("/consultas/resumen/categoria"),
+
+  urgencias: () => api("/consultas/resumen/urgencia"),
+
+  conversaciones: ({
+    id_categoria,
+    id_urgencia,
+    limit = 20,
+    offset = 0
+  } = {}) => {
+    const params = new URLSearchParams();
+
+    params.set("limit", String(limit));
+    params.set("offset", String(offset));
+
+    if (id_categoria != null) {
+      params.set("id_categoria", String(id_categoria));
+    }
+
+    if (id_urgencia != null) {
+      params.set("id_urgencia", String(id_urgencia));
+    }
+
+    return api(`/consultas?${params.toString()}`);
+  }
+};
