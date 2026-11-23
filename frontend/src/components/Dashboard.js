@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import { LayoutDashboard, Users, MessageSquare, CheckCircle2, Clock3, Eye, BarChart3, PieChart, Tags, AlertCircle, Lightbulb } from 'lucide-react';
 
 import Recomendaciones from './Recomendaciones';
 import TablaCategorias from './TablaCategorias';
 import TablaUrgencias from './TablaUrgencias';
 import Graficas from './Graficas';
+
+import { clientesApi, consultasApi } from '../api/client';
 
 const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 const valores = [20, 31, 26, 33, 36, 46, 39];
@@ -35,9 +38,64 @@ const secciones = [
 ];
 export default function Dashboard({ visitas = 0 }) {
     const [seccion, setSeccion] = useState('graficas');
+
+
+    const [totales, setTotales] = useState({
+        clientes: null,
+        conversaciones: null
+    });
+
+    const [errorTotales, setErrorTotales] = useState(false);
+
+    useEffect(() => {
+        let activo = true;
+
+        async function cargarTotales() {
+            try {
+                const [datosClientes, datosConsultas] = await Promise.all([
+                    clientesApi.listar(1, 0),
+                    consultasApi.listar(1, 0)
+                ]);
+
+                if (activo) {
+                    setTotales({
+                        clientes: datosClientes.total,
+                        conversaciones: datosConsultas.total
+                    });
+                    setErrorTotales(false);
+                }
+            } catch (error) {
+                if (activo) {
+                    setErrorTotales(true);
+                }
+            }
+        }
+
+        cargarTotales();
+
+        return () => {
+            activo = false;
+        };
+    }, []);
+
+
     const indicadores = [
-        { nombre: 'Clientes', valor: '24', detalle: 'Datos de ejemplo', icono: Users, clase: 'clientes' },
-        { nombre: 'Conversaciones', valor: '128', detalle: 'Datos de ejemplo', icono: MessageSquare, clase: 'chat' },
+
+        {
+            nombre: 'Clientes',
+            valor: errorTotales ? '—' : totales.clientes ?? '...',
+            detalle: errorTotales ? 'Error al cargar' : 'Registrados en MySQL',
+            icono: Users,
+            clase: 'clientes'
+        },
+        {
+            nombre: 'Conversaciones',
+            valor: errorTotales ? '—' : totales.conversaciones ?? '...',
+            detalle: errorTotales ? 'Error al cargar' : 'Registradas en MySQL',
+            icono: MessageSquare,
+            clase: 'chat'
+        },
+
         { nombre: 'Consultas resueltas', valor: '92 %', detalle: 'Datos de ejemplo', icono: CheckCircle2, clase: 'resueltas' },
         { nombre: 'Tiempo medio de respuesta', valor: '3,4 s', detalle: 'Datos de ejemplo', icono: Clock3, clase: 'tiempo' },
         { nombre: 'Visitas al Dashboard', valor: visitas, detalle: 'En este navegador', icono: Eye, clase: 'visitas' }
