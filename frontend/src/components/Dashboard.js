@@ -6,6 +6,7 @@ import Recomendaciones from './Recomendaciones';
 import TablaCategorias from './TablaCategorias';
 import TablaUrgencias from './TablaUrgencias';
 import Graficas from './Graficas';
+import useDashboardActivities from '../hooks/useDashboardActivities';
 
 import { clientesApi, consultasApi } from '../api/client';
 
@@ -24,12 +25,7 @@ const urgencias = [
     { nivel: 'Media', cantidad: 36, clase: 'media' },
     { nivel: 'Baja', cantidad: 80, clase: 'baja' }
 ];
-const actividades = [
-    { hora: '10:24', descripcion: '¿Dónde está mi pedido?', resultado: 'Resuelta' },
-    { hora: '10:17', descripcion: 'Quiero devolver un producto', resultado: 'Resuelta' },
-    { hora: '10:05', descripcion: '¿A qué hora abrís?', resultado: 'Resuelta' },
-    { hora: '09:58', descripcion: 'Quiero hablar con una persona', resultado: 'Derivada a humano' }
-];
+
 const secciones = [
     { id: 'categorias', nombre: 'Conversaciones por categoría', icono: Tags },
     { id: 'urgencias', nombre: 'Conversaciones por urgencia', icono: AlertCircle },
@@ -38,6 +34,7 @@ const secciones = [
 ];
 export default function Dashboard({ visitas = 0 }) {
     const [seccion, setSeccion] = useState('graficas');
+    const { actividades, error: errorActividades } = useDashboardActivities();
 
 
     const [totales, setTotales] = useState({
@@ -144,15 +141,20 @@ export default function Dashboard({ visitas = 0 }) {
             {seccion === 'recomendaciones' && <Recomendaciones />}
         </div>
         <article className="dash-card dash-activity">
-            <h3><MessageSquare size={22} /> Últimas actividades (ejemplo)</h3>
+            <h3><MessageSquare size={22} /> Últimas actividades</h3>
             <div className="dash-table-scroll">
                 <table>
-                    <thead><tr><th>Hora</th><th>Descripción</th><th>Resultado</th></tr></thead>
-                    <tbody>{actividades.map((a, i) => <tr key={i}>
+                    <thead><tr><th>Fecha</th><th>Hora</th><th>Descripción</th><th>Resultado</th></tr></thead>
+                    <tbody>{errorActividades ? (
+                        <tr><td colSpan="4">No se pudieron cargar las consultas.</td></tr>
+                    ) : actividades.length ? actividades.map((a) => <tr key={a.id}>
+                        <td>{a.fecha}</td>
                         <td>{a.hora}</td>
                         <td>{a.descripcion}</td>
                         <td><span className={a.resultado === 'Resuelta' ? 'dash-ok' : 'dash-human'}>{a.resultado}</span></td>
-                    </tr>)}</tbody>
+                    </tr>) : (
+                        <tr><td colSpan="4">No hay consultas registradas.</td></tr>
+                    )}</tbody>
                 </table>
             </div>
         </article>
