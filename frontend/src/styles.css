@@ -1633,7 +1633,47 @@ button:disabled {
 @media(max-width:1080px){.dash-graphs{grid-template-columns:1fr}.dash-types{flex-wrap:wrap}.hero{padding-left:64px}}
 @media(max-width:700px){.dash-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.dash-card{padding:15px}.dash-heading h2{font-size:20px}.dash-donut{width:175px;height:175px}.dash-donut>div{width:105px;height:105px}.dash-contenedor{padding:10px}.dash-subtabs{display:grid;grid-template-columns:1fr 1fr}.dash-subtab{font-size:11px;padding:10px 6px}.dash-subtab svg{width:15px;height:15px}.hero{padding-left:25px}}
 @media(max-width:440px){.dash-stats{grid-template-columns:1fr}.dash-stat{min-height:90px}.dash-types{gap:12px}}
-
+/* RECOMENDACIONES AUTOMATICAS CON IA */
+.recom-analisis-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;margin-bottom:22px}
+.recom-analisis-header p{margin:8px 0 0}
+.recom-estado-inicial{text-align:center;padding:48px 20px;border:1px dashed #e6d9c9;border-radius:16px;background:#fffaf5;color:#657080}
+.recom-estado-inicial svg{color:#ff870d}
+.recom-estado-inicial h4{margin:12px 0;color:#202636;font-size:17px}
+.recom-estado-inicial p{max-width:520px;margin:0 auto;line-height:1.7}
+.recom-resumen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:25px}
+.recom-resumen>div{display:flex;flex-direction:column;gap:8px;padding:18px;background:#fff8ed;border:1px solid #f3e5d3;border-radius:13px}
+.recom-resumen span{color:#697080;font-size:12px}
+.recom-resumen strong{color:#202636;font-size:22px}
+.recom-resultados>h3{margin-bottom:17px}
+.recom-introduccion{padding:15px;margin-bottom:15px;color:#596171;font-size:13px;line-height:1.7;white-space:pre-wrap}
+.recom-lista{display:grid;gap:15px}
+.recom-tarjeta{padding:20px;border:1px solid #e8e8ed;border-left:5px solid #ff870d;border-radius:14px;background:#fff;box-shadow:0 5px 18px #2026360a}
+.recom-prioridad-alta{border-left-color:#e75b50}
+.recom-prioridad-media{border-left-color:#f0ba19}
+.recom-prioridad-baja{border-left-color:#47a86f}
+.recom-etiqueta{display:inline-block;margin-bottom:13px;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase}
+.recom-etiqueta-alta{background:#ffe9e7;color:#ad3026}
+.recom-etiqueta-media{background:#fff3cd;color:#875d00}
+.recom-etiqueta-baja{background:#e5f5e9;color:#257342}
+.recom-texto{color:#354052;font-size:13px;line-height:1.85;white-space:pre-wrap;overflow-wrap:anywhere}
+.recom-aclaracion{margin:22px 0 0;color:#758093;font-size:11px;line-height:1.7}
+.recomendaciones .recom-error{display:flex;align-items:center;gap:10px}
+.dark .recom-estado-inicial{background:#293348;border-color:#485163}
+.dark .recom-estado-inicial h4{color:#fff}
+.dark .recom-resumen>div{background:#343748;border-color:#51505c}
+.dark .recom-resumen strong{color:#fff}
+.dark .recom-tarjeta{background:#293348;border-top-color:#485163;border-right-color:#485163;border-bottom-color:#485163}
+.dark .recom-texto,.dark .recom-introduccion{color:#e0e6f0}
+@media(max-width:700px){.recom-resumen{grid-template-columns:1fr}.recom-analisis-header{align-items:flex-start}.recom-analisis-header .recom-button{width:100%}}
+.recom-historial{display:flex;flex-direction:column;gap:9px;margin-bottom:24px;padding:17px;border:1px solid #f0e2cc;border-radius:13px;background:#fffaf2}
+.recom-historial label{display:flex;align-items:center;gap:9px;color:#202636;font-size:13px;font-weight:700}
+.recom-historial label svg{color:#e4a600}
+.recom-historial select{width:100%;min-height:44px;padding:10px 12px;border:1px solid #e2d6c5;border-radius:9px;background:#fff;color:#202636;font:inherit;font-size:13px;cursor:pointer}
+.recom-historial select:focus{outline:2px solid #f0ba19;outline-offset:2px}
+.recom-titulo{margin:0 0 10px;color:#202636;font-size:16px}
+.dark .recom-historial{background:#30394b;border-color:#495267}
+.dark .recom-historial label,.dark .recom-titulo{color:#f6f7fb}
+.dark .recom-historial select{background:#293348;color:#f6f7fb;border-color:#515d70}
 /* Gráficas del Dashboard */
 .grafica-barras{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));align-items:end;gap:10px;min-height:220px;padding:12px 6px 4px;border-bottom:1px solid #e9eaf0}
 .grafica-barra-col{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
