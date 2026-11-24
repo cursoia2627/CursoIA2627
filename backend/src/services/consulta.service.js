@@ -68,6 +68,46 @@ async function resumen(tipo, user) {
   );
   return r;
 }
+
+async function resumenSatisfaccion(user) {
+  const filtro = user.Rol === "Administrador" ? "" : " AND a.id=?";
+  const parametros = user.Rol === "Administrador" ? [] : [user.id_cliente];
+
+  const [categorias] = await pool.query(
+    "SELECT c.id_categoria AS id,c.nombre,COUNT(a.id_consulta) AS valoradas," +
+      "COALESCE(SUM(a.valoracion=1),0) AS positivas " +
+      "FROM categoria c LEFT JOIN atencion_cliente a ON a.id_categoria=c.id_categoria " +
+      "AND a.estado_respuesta='respondida' AND a.valoracion IS NOT NULL" +
+      filtro +
+      " GROUP BY c.id_categoria,c.nombre ORDER BY c.id_categoria",
+    parametros,
+  );
+  const [urgencias] = await pool.query(
+    "SELECT u.id_urgencia AS id,u.nombre,COUNT(a.id_consulta) AS valoradas," +
+      "COALESCE(SUM(a.valoracion=1),0) AS positivas " +
+      "FROM urgencia u LEFT JOIN atencion_cliente a ON a.id_urgencia=u.id_urgencia " +
+      "AND a.estado_respuesta='respondida' AND a.valoracion IS NOT NULL" +
+      filtro +
+      " GROUP BY u.id_urgencia,u.nombre ORDER BY u.id_urgencia",
+    parametros,
+  );
+
+  const calcularPorcentaje = (items) =>
+    items.map((item) => ({
+      ...item,
+      valoradas: Number(item.valoradas),
+      positivas: Number(item.positivas),
+      porcentaje: Number(item.valoradas)
+        ? Math.round((Number(item.positivas) / Number(item.valoradas)) * 100)
+        : null,
+    }));
+
+  return {
+    categorias: calcularPorcentaje(categorias),
+    urgencias: calcularPorcentaje(urgencias),
+  };
+}
+
 async function create(data, user) {
   const id = user.Rol === "Administrador" ? data.id : user.id_cliente;
   const [r] = await pool.query(
@@ -107,4 +147,4 @@ async function remove(id, user) {
   );
   return r.affectedRows > 0;
 }
-module.exports = { list, get, create, update, remove, catalogos, resumen };
+module.exports = { list, get, create, update, remove, catalogos, resumen, resumenSatisfaccion };

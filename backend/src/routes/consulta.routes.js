@@ -6,6 +6,7 @@ r.get("/", w(c.list));
 r.get("/catalogos", w(c.catalogos));
 r.get("/resumen/categoria", w(c.resumenCategoria));
 r.get("/resumen/urgencia", w(c.resumenUrgencia));
+r.get("/resumen/satisfaccion", w(c.resumenSatisfaccion));
 r.get("/:id", w(c.get));
 r.post("/", w(c.create));
 r.patch("/:id", requireRole("Administrador"), w(c.update));

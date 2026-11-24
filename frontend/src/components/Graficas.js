@@ -48,6 +48,8 @@ async function solicitar(path, options = {}) {
 export default function Graficas() {
     const [categorias, setCategorias] = useState([]);
     const [urgencias, setUrgencias] = useState([]);
+    const [satisfaccion, setSatisfaccion] = useState({ categorias: [], urgencias: [] });
+    const [errorSatisfaccion, setErrorSatisfaccion] = useState('');
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState('');
 
@@ -55,6 +57,18 @@ export default function Graficas() {
         let activo = true;
         setCargando(true);
         setError('');
+
+        solicitar('/consultas/resumen/satisfaccion')
+            .then((datos) => {
+                if (!activo) return;
+                setSatisfaccion({
+                    categorias: Array.isArray(datos?.categorias) ? datos.categorias : [],
+                    urgencias: Array.isArray(datos?.urgencias) ? datos.urgencias : []
+                });
+            })
+            .catch((err) => {
+                if (activo) setErrorSatisfaccion(err.message || 'No se pudo cargar la satisfacción.');
+            });
 
         Promise.all([
             solicitar('/consultas/resumen/categoria'),
@@ -147,80 +161,136 @@ export default function Graficas() {
         : '#e3e6ec';
 
     return (
-        <div className="dash-graphs">
-            <article className="dash-card">
-                <h3>
-                    <BarChart3 size={21} /> Conversaciones por categoría
-                </h3>
-                {totalCategorias === 0 ? (
-                    <p className="empty">no hay conversaciones todavía</p>
-                ) : (
-                    <>
-                        <div className="grafica-barras" role="img" aria-label="Gráfico de barras de conversaciones por categoría">
-                            {categorias.map((cat) => {
-                                const alturaPct = Math.round((cat.total / maxCategoria) * 100);
-                                return (
-                                    <div className="grafica-barra-col" key={cat.id}>
-                                        <span className="grafica-barra-valor">{cat.total}</span>
-                                        <div className="grafica-barra-pista">
-                                            <div
-                                                className="grafica-barra-relleno"
-                                                style={{
-                                                    height: `${cat.total > 0 ? Math.max(alturaPct, 6) : 0}%`,
-                                                    backgroundColor: cat.color
-                                                }}
-                                                title={`${cat.nombre}: ${cat.total}`}
-                                            />
+        <>
+            <div className="dash-graphs">
+                <article className="dash-card">
+                    <h3>
+                        <BarChart3 size={21} /> Conversaciones por categoría
+                    </h3>
+                    {totalCategorias === 0 ? (
+                        <p className="empty">no hay conversaciones todavía</p>
+                    ) : (
+                        <>
+                            <div className="grafica-barras" role="img" aria-label="Gráfico de barras de conversaciones por categoría">
+                                {categorias.map((cat) => {
+                                    const alturaPct = Math.round((cat.total / maxCategoria) * 100);
+                                    return (
+                                        <div className="grafica-barra-col" key={cat.id}>
+                                            <span className="grafica-barra-valor">{cat.total}</span>
+                                            <div className="grafica-barra-pista">
+                                                <div
+                                                    className="grafica-barra-relleno"
+                                                    style={{
+                                                        height: `${cat.total > 0 ? Math.max(alturaPct, 6) : 0}%`,
+                                                        backgroundColor: cat.color
+                                                    }}
+                                                    title={`${cat.nombre}: ${cat.total}`}
+                                                />
+                                            </div>
+                                            <span className="grafica-barra-etiqueta">{cat.nombre}</span>
                                         </div>
-                                        <span className="grafica-barra-etiqueta">{cat.nombre}</span>
+                                    );
+                                })}
+                            </div>
+                            <div className="grafica-leyenda-horizontal">
+                                {categorias.map((cat) => (
+                                    <div className="grafica-leyenda-item" key={cat.id}>
+                                        <span className="dash-dot" style={{ backgroundColor: cat.color }} />
+                                        <span>{cat.nombre}</span>
+                                        <strong>{cat.total}</strong>
                                     </div>
-                                );
-                            })}
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </article>
+
+                <article className="dash-card">
+                    <h3>
+                        <PieChart size={21} /> Conversaciones por urgencia
+                    </h3>
+                    {totalUrgencias === 0 ? (
+                        <p className="empty">no hay conversaciones todavía</p>
+                    ) : (
+                        <div className="dash-types">
+                            <div
+                                className="grafica-circular"
+                                style={{ background: fondoCircular }}
+                                role="img"
+                                aria-label="Gráfico circular de conversaciones por urgencia"
+                            />
+                            <div className="dash-legend">
+                                {urgencias.map((urg) => {
+                                    const pct = totalUrgencias > 0 ? Math.round((urg.total / totalUrgencias) * 100) : 0;
+                                    return (
+                                        <div key={urg.id}>
+                                            <span className="dash-dot" style={{ backgroundColor: urg.color }} />
+                                            <span>{urg.nombre}</span>
+                                            <strong>
+                                                {urg.total} ({pct}%)
+                                            </strong>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
-                        <div className="grafica-leyenda-horizontal">
-                            {categorias.map((cat) => (
-                                <div className="grafica-leyenda-item" key={cat.id}>
-                                    <span className="dash-dot" style={{ backgroundColor: cat.color }} />
-                                    <span>{cat.nombre}</span>
-                                    <strong>{cat.total}</strong>
+                    )}
+                </article>
+            </div>
+
+            <div className="dash-graphs dash-satisfaccion">
+                <article className="dash-card">
+                    <h3>Satisfacción por categoría</h3>
+                    <p className="satisfaccion-subtitulo">% de valoraciones positivas · solo consultas resueltas y valoradas</p>
+                    {errorSatisfaccion ? (
+                        <p className="recom-error">{errorSatisfaccion}</p>
+                    ) : (
+                        <div className="satisfaccion-categorias">
+                            {satisfaccion.categorias.map((item) => (
+                                <div className="satisfaccion-fila" key={item.id}>
+                                    <span className="satisfaccion-nombre">{capitalizar(item.nombre)}</span>
+                                    <div className="satisfaccion-pista">
+                                        <div
+                                            className="satisfaccion-relleno"
+                                            style={{ width: `${item.porcentaje ?? 0}%` }}
+                                        />
+                                    </div>
+                                    <strong className="satisfaccion-porcentaje">
+                                        {item.porcentaje == null ? '—' : `${item.porcentaje} %`}
+                                    </strong>
+                                    <span className="satisfaccion-total">
+                                        {item.valoradas} valoradas
+                                    </span>
                                 </div>
                             ))}
                         </div>
-                    </>
-                )}
-            </article>
+                    )}
+                </article>
 
-            <article className="dash-card">
-                <h3>
-                    <PieChart size={21} /> Conversaciones por urgencia
-                </h3>
-                {totalUrgencias === 0 ? (
-                    <p className="empty">no hay conversaciones todavía</p>
-                ) : (
-                    <div className="dash-types">
-                        <div
-                            className="grafica-circular"
-                            style={{ background: fondoCircular }}
-                            role="img"
-                            aria-label="Gráfico circular de conversaciones por urgencia"
-                        />
-                        <div className="dash-legend">
-                            {urgencias.map((urg) => {
-                                const pct = totalUrgencias > 0 ? Math.round((urg.total / totalUrgencias) * 100) : 0;
-                                return (
-                                    <div key={urg.id}>
-                                        <span className="dash-dot" style={{ backgroundColor: urg.color }} />
-                                        <span>{urg.nombre}</span>
-                                        <strong>
-                                            {urg.total} ({pct}%)
-                                        </strong>
-                                    </div>
-                                );
-                            })}
+                <article className="dash-card">
+                    <h3>Satisfacción por urgencia</h3>
+                    {errorSatisfaccion ? (
+                        <p className="recom-error">{errorSatisfaccion}</p>
+                    ) : (
+                        <div className="dash-table-scroll">
+                            <table className="satisfaccion-tabla">
+                                <thead>
+                                    <tr><th>Urgencia</th><th>Valoradas</th><th>% positivas</th></tr>
+                                </thead>
+                                <tbody>
+                                    {satisfaccion.urgencias.map((item) => (
+                                        <tr key={item.id}>
+                                            <td>{capitalizar(item.nombre)}</td>
+                                            <td>{item.valoradas}</td>
+                                            <td><strong>{item.porcentaje == null ? 'sin valoraciones' : `${item.porcentaje} %`}</strong></td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
-                )}
-            </article>
-        </div>
+                    )}
+                </article>
+            </div>
+        </>
     );
 }

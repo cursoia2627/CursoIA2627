@@ -29,6 +29,9 @@ async function resumenCategoria(req, res) {
 async function resumenUrgencia(req, res) {
   res.json({ data: await service.resumen("urgencia", req.user) });
 }
+async function resumenSatisfaccion(req, res) {
+  res.json({ data: await service.resumenSatisfaccion(req.user) });
+}
 async function get(req, res) {
   const x = await service.get(parse(id, req.params.id), req.user);
   if (!x) throw new AppError(404, "Consulta no encontrada.", "NOT_FOUND");
@@ -66,6 +69,7 @@ module.exports = {
   catalogos,
   resumenCategoria,
   resumenUrgencia,
+  resumenSatisfaccion,
   get,
   create,
   update,

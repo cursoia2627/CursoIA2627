@@ -1649,3 +1649,28 @@ button:disabled {
 .dark .grafica-barra-pista{background:#334055}
 .dark .grafica-barra-etiqueta{color:#cbd5e1}
 @media(max-width:700px){.grafica-circular{width:175px;height:175px}}
+
+
+/* Resultados reales de las encuestas de satisfacción */
+.dash-satisfaccion{margin-top:16px}
+.satisfaccion-subtitulo{margin:-7px 0 12px;color:#718096;font-size:13px}
+.satisfaccion-categorias{display:grid;gap:11px}
+.satisfaccion-fila{display:grid;grid-template-columns:minmax(115px,1fr) minmax(90px,1.35fr) 58px 92px;align-items:center;gap:12px}
+.satisfaccion-nombre{font-size:13px;color:#344054}
+.satisfaccion-pista{height:21px;border-radius:6px;background:#eee9ff;overflow:hidden}
+.satisfaccion-relleno{height:100%;border-radius:6px;background:#7938ed;transition:width .25s ease}
+.satisfaccion-porcentaje{font-size:14px;text-align:right;color:#263247;white-space:nowrap}
+.satisfaccion-total{font-size:12px;color:#718096}
+.satisfaccion-tabla{width:100%;border-collapse:collapse;font-size:13px}
+.satisfaccion-tabla th,.satisfaccion-tabla td{text-align:left;padding:12px 14px;border-bottom:1px solid #e1e7ef}
+.satisfaccion-tabla th{color:#526078;font-weight:700}
+.satisfaccion-tabla td{color:#344054}
+.satisfaccion-tabla td strong{color:#263247}
+.dark .satisfaccion-nombre,.dark .satisfaccion-porcentaje,.dark .satisfaccion-tabla td,.dark .satisfaccion-tabla td strong{color:#f6f7fb}
+.dark .satisfaccion-subtitulo,.dark .satisfaccion-total{color:#cbd5e1}
+.dark .satisfaccion-pista{background:#41385e}
+.dark .satisfaccion-tabla th,.dark .satisfaccion-tabla td{border-color:#374255}
+@media(max-width:700px){
+  .satisfaccion-fila{grid-template-columns:minmax(90px,1fr) minmax(65px,1.1fr) 52px}
+  .satisfaccion-total{grid-column:2 / 4}
+}
