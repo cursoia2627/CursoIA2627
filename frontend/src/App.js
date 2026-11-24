@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Users,
   MessageSquare,
+  ClipboardList,
   UserRound,
   Sun,
   Moon,
@@ -15,6 +16,7 @@ import {
 import Brand from "./components/Brand";
 import Clientes from "./components/Clientes";
 import ChatBot from "./components/ChatBot";
+import MisConsultas from "./components/MisConsultas";
 import Avatar from "./components/Avatar";
 import Dashboard from "./components/Dashboard";
 import CookieConsent from "./components/CookieConsent";
@@ -23,9 +25,12 @@ import { conversacionesIniciales } from "./data/demo";
 import { authApi } from "./services/authApi";
 import { API_BASE, API_ROOT } from "./api/url";
 import "./styles.css";
+
+
 const tabs = [
   { id: "clientes", label: "Clientes", icon: Users },
   { id: "chat", label: "Chat Bot", icon: MessageSquare },
+  { id: "mis-consultas", label: "Mis consultas", icon: ClipboardList },
   { id: "avatar", label: "Avatar", icon: UserRound },
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
 ];
@@ -41,7 +46,7 @@ function useLocalStorage(key, initial) {
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(value));
-    } catch {}
+    } catch { }
   }, [key, value]);
   return [value, setValue];
 }
@@ -125,7 +130,7 @@ export default function App() {
         } else {
           URL.revokeObjectURL(nextUrl);
         }
-      } catch {}
+      } catch { }
     }
     const onAvatarUpdated = (event) => {
       if (!event.detail?.id || String(event.detail.id) === String(clientId))
@@ -142,16 +147,28 @@ export default function App() {
   async function logout() {
     try {
       await authApi.logout();
-    } catch {}
+    } catch { }
     setUser(null);
     setTab("clientes");
   }
+
+
   function canAccess(section) {
-    return (
-      tabs.some((t) => t.id === section) &&
-      (section !== "dashboard" || user?.Rol === "Administrador")
-    );
+    if (!tabs.some((t) => t.id === section)) return false;
+
+    if (section === "dashboard") {
+      return user?.Rol === "Administrador";
+    }
+
+    if (section === "mis-consultas") {
+      return user?.Rol === "Cliente";
+    }
+
+    return true;
   }
+
+
+
   function changeTab(next) {
     if (!canAccess(next)) return;
     if (next === "dashboard" && tab !== "dashboard")
@@ -287,6 +304,9 @@ export default function App() {
                 conversaciones={conversaciones}
                 setConversaciones={setConversaciones}
               />
+            )}
+            {activeTab === "mis-consultas" && user.Rol === "Cliente" && (
+              <MisConsultas />
             )}
             {activeTab === "avatar" && <Avatar />}
             {activeTab === "dashboard" && user.Rol === "Administrador" && (

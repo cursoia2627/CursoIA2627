@@ -51,6 +51,14 @@ export const consultasApi = {
   editar: (id, cambios) =>
     api(`/consultas/${id}`, { method: "PATCH", body: JSON.stringify(cambios) }),
   eliminar: (id) => api(`/consultas/${id}`, { method: "DELETE" }),
+
+
+  valorar: (id, valoracion) =>
+    api(`/consultas/${id}/valoracion`, {
+      method: "PATCH",
+      body: JSON.stringify({ valoracion }),
+    }),
+
 };
 
 export const dashboardTablasApi = {

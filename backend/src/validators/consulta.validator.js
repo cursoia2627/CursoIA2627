@@ -19,6 +19,13 @@ const consultaUpdateBody = z
   })
   .strict()
   .refine((v) => Object.keys(v).length > 0, "Debe indicar al menos un campo.");
+
+const valoracionBody = z
+  .object({
+    valoracion: z.union([z.literal(0), z.literal(1)]),
+  })
+  .strict();
+
 const id = z.coerce.number().int().positive();
 const listQuery = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
@@ -30,4 +37,11 @@ const listQuery = z.object({
   id_categoria: z.coerce.number().int().positive().optional(),
   id_urgencia: z.coerce.number().int().positive().optional(),
 });
-module.exports = { consultaBody, consultaUpdateBody, id, listQuery };
+
+module.exports = {
+  consultaBody,
+  consultaUpdateBody,
+  valoracionBody,
+  id,
+  listQuery,
+};

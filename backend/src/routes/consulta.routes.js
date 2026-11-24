@@ -19,6 +19,13 @@ r.get("/resumen/resueltas", w(async (req, res) => {
 
 r.get("/:id", w(c.get));
 r.post("/", w(c.create));
+
+r.patch(
+  "/:id/valoracion",
+  requireRole("Cliente"),
+  w(c.valorar)
+);
+
 r.patch("/:id", requireRole("Administrador"), w(c.update));
 r.delete("/:id", requireRole("Administrador"), w(c.remove));
 

@@ -2,6 +2,7 @@ const service = require("../services/consulta.service");
 const {
   consultaBody,
   consultaUpdateBody,
+  valoracionBody,
   id,
   listQuery,
 } = require("../validators/consulta.validator");
@@ -62,6 +63,38 @@ async function update(req, res) {
   if (!x) throw new AppError(404, "Consulta no encontrada.", "NOT_FOUND");
   res.json({ data: x });
 }
+
+
+async function valorar(req, res) {
+  if (req.user.Rol !== "Cliente") {
+    throw new AppError(
+      403,
+      "Solo los clientes pueden valorar sus consultas.",
+      "FORBIDDEN"
+    );
+  }
+
+  const idConsulta = parse(id, req.params.id);
+  const { valoracion } = parse(valoracionBody, req.body);
+
+  const consulta = await service.valorar(
+    idConsulta,
+    valoracion,
+    req.user
+  );
+
+  if (!consulta) {
+    throw new AppError(
+      404,
+      "Consulta no encontrada o no disponible para valorar.",
+      "NOT_FOUND"
+    );
+  }
+
+  res.json({ data: consulta });
+}
+
+
 async function remove(req, res) {
   if (!(await service.remove(parse(id, req.params.id), req.user)))
     throw new AppError(404, "Consulta no encontrada.", "NOT_FOUND");
@@ -77,5 +110,6 @@ module.exports = {
   get,
   create,
   update,
+  valorar,
   remove,
 };
