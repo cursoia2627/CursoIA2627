@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 
 import { LayoutDashboard, Users, MessageSquare, CheckCircle2, Clock3, Eye, BarChart3, PieChart, Tags, AlertCircle, Lightbulb } from 'lucide-react';
@@ -9,6 +10,7 @@ import Graficas from './Graficas';
 import useDashboardActivities from '../hooks/useDashboardActivities';
 
 import { clientesApi, consultasApi } from '../api/client';
+import { API_BASE } from '../api/url';
 
 const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 const valores = [20, 31, 26, 33, 36, 46, 39];
@@ -43,6 +45,49 @@ export default function Dashboard({ visitas = 0 }) {
     });
 
     const [errorTotales, setErrorTotales] = useState(false);
+
+    const [resumenResueltas, setResumenResueltas] = useState(null);
+    const [errorResueltas, setErrorResueltas] = useState(false);
+
+    useEffect(() => {
+        let activo = true;
+
+        async function cargarResueltas() {
+            try {
+                const response = await fetch(`${API_BASE}/consultas/resumen/resueltas`, {
+                    credentials: 'include',
+                    cache: 'no-store'
+                });
+
+                if (response.status === 401) {
+                    window.dispatchEvent(new Event('auth:expired'));
+                    return;
+                }
+
+                if (!response.ok) throw new Error('No se pudieron cargar las consultas resueltas');
+
+                const body = await response.json();
+                const datos = body.data ?? body;
+
+                if (!Number.isFinite(Number(datos.porcentaje)) || !Number.isFinite(Number(datos.resueltas)) || !Number.isFinite(Number(datos.total)))
+                    throw new Error('Datos de consultas resueltas no válidos');
+
+                if (activo) {
+                    setResumenResueltas(datos);
+                    setErrorResueltas(false);
+                }
+            } catch (error) {
+                if (activo) setErrorResueltas(true);
+            }
+        }
+
+        cargarResueltas();
+
+        return () => {
+            activo = false;
+        };
+    }, []);
+
 
     useEffect(() => {
         let activo = true;
@@ -93,7 +138,13 @@ export default function Dashboard({ visitas = 0 }) {
             clase: 'chat'
         },
 
-        { nombre: 'Consultas resueltas', valor: '92 %', detalle: 'Datos de ejemplo', icono: CheckCircle2, clase: 'resueltas' },
+        {
+            nombre: 'Consultas resueltas',
+            valor: errorResueltas ? '—' : resumenResueltas ? `${resumenResueltas.porcentaje} %` : '...',
+            detalle: errorResueltas ? 'Error al cargar' : resumenResueltas ? `${resumenResueltas.resueltas} de ${resumenResueltas.total} · valoración positiva` : 'Cargando datos de MySQL',
+            icono: CheckCircle2,
+            clase: 'resueltas'
+        },
         { nombre: 'Tiempo medio de respuesta', valor: '3,4 s', detalle: 'Datos de ejemplo', icono: Clock3, clase: 'tiempo' },
         { nombre: 'Visitas al Dashboard', valor: visitas, detalle: 'En este navegador', icono: Eye, clase: 'visitas' }
     ];
