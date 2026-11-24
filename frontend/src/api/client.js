@@ -80,3 +80,7 @@ export const dashboardTablasApi = {
     return api(`/consultas?${params.toString()}`);
   }
 };
+
+export const dashboardApi = {
+  satisfaccionClientes: () => api("/consultas/resumen/satisfaccion/clientes"),
+};

@@ -29,6 +29,9 @@ async function resumenCategoria(req, res) {
 async function resumenUrgencia(req, res) {
   res.json({ data: await service.resumen("urgencia", req.user) });
 }
+async function porcentajeClientesSatisfechos(req, res) {
+  res.json({ data: await service.porcentajeClientesSatisfechos() });
+}
 async function resumenSatisfaccion(req, res) {
   res.json({ data: await service.resumenSatisfaccion(req.user) });
 }
@@ -70,6 +73,7 @@ module.exports = {
   resumenCategoria,
   resumenUrgencia,
   resumenSatisfaccion,
+  porcentajeClientesSatisfechos,
   get,
   create,
   update,

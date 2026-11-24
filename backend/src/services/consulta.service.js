@@ -70,6 +70,50 @@ async function resumen(tipo, user) {
   return r;
 }
 
+async function resumenSatisfaccion(user) {
+  const filtro = user.Rol === "Administrador" ? "" : " AND a.id=?";
+  const parametros =
+    user.Rol === "Administrador" ? [] : [user.id_cliente];
+
+  const [categorias] = await pool.query(
+    "SELECT c.id_categoria AS id,c.nombre,COUNT(a.id_consulta) AS valoradas," +
+      "COALESCE(SUM(a.valoracion=1),0) AS positivas " +
+      "FROM categoria c LEFT JOIN atencion_cliente a ON a.id_categoria=c.id_categoria " +
+      "AND a.estado_respuesta='respondida' AND a.valoracion IS NOT NULL" +
+      filtro +
+      " GROUP BY c.id_categoria,c.nombre ORDER BY c.id_categoria",
+    parametros,
+  );
+  const [urgencias] = await pool.query(
+    "SELECT u.id_urgencia AS id,u.nombre,COUNT(a.id_consulta) AS valoradas," +
+      "COALESCE(SUM(a.valoracion=1),0) AS positivas " +
+      "FROM urgencia u LEFT JOIN atencion_cliente a ON a.id_urgencia=u.id_urgencia " +
+      "AND a.estado_respuesta='respondida' AND a.valoracion IS NOT NULL" +
+      filtro +
+      " GROUP BY u.id_urgencia,u.nombre ORDER BY u.id_urgencia",
+    parametros,
+  );
+
+  const calcularPorcentaje = (items) =>
+    items.map((item) => {
+      const valoradas = Number(item.valoradas);
+      const positivas = Number(item.positivas);
+      return {
+        ...item,
+        valoradas,
+        positivas,
+        porcentaje: valoradas
+          ? Math.round((positivas / valoradas) * 100)
+          : null,
+      };
+    });
+
+  return {
+    categorias: calcularPorcentaje(categorias),
+    urgencias: calcularPorcentaje(urgencias),
+  };
+}
+
 // Calcula las consultas resueltas usando MySQL y la valoración del cliente.
 async function resumenResueltas(user) {
   const admin = user.Rol === "Administrador";
@@ -100,6 +144,27 @@ async function resumenResueltas(user) {
     negativas,
     sinValoracion,
     porcentaje
+  };
+}
+
+// Satisfecho: más del 70% de sus consultas respondidas y valoradas recibieron valoración positiva.
+async function porcentajeClientesSatisfechos() {
+  const [[resumen]] = await pool.query(
+    "SELECT COUNT(*) AS totalClientes, " +
+      "COALESCE(SUM(porcentaje_positivas > 0.7), 0) AS clientesSatisfechos " +
+      "FROM (SELECT id, AVG(valoracion = 1) AS porcentaje_positivas " +
+      "FROM atencion_cliente WHERE estado_respuesta='respondida' " +
+      "AND valoracion IS NOT NULL GROUP BY id) AS valoraciones_cliente",
+  );
+  const totalClientes = Number(resumen.totalClientes);
+  const clientesSatisfechos = Number(resumen.clientesSatisfechos);
+
+  return {
+    totalClientes,
+    clientesSatisfechos,
+    porcentaje: totalClientes
+      ? Math.round((clientesSatisfechos / totalClientes) * 100)
+      : null,
   };
 }
 
@@ -150,5 +215,7 @@ module.exports = {
   remove,
   catalogos,
   resumen,
-  resumenResueltas
+  resumenSatisfaccion,
+  resumenResueltas,
+  porcentajeClientesSatisfechos,
 };

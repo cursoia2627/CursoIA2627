@@ -9,6 +9,8 @@ r.get("/", w(c.list));
 r.get("/catalogos", w(c.catalogos));
 r.get("/resumen/categoria", w(c.resumenCategoria));
 r.get("/resumen/urgencia", w(c.resumenUrgencia));
+r.get("/resumen/satisfaccion", w(c.resumenSatisfaccion));
+r.get("/resumen/satisfaccion/clientes", requireRole("Administrador"), w(c.porcentajeClientesSatisfechos));
 
 r.get("/resumen/resueltas", w(async (req, res) => {
   const datos = await s.resumenResueltas(req.user);

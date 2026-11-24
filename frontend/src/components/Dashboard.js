@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { LayoutDashboard, Users, MessageSquare, CheckCircle2, Clock3, Eye, BarChart3, PieChart, Tags, AlertCircle, Lightbulb } from 'lucide-react';
+import { LayoutDashboard, Users, MessageSquare, CheckCircle2, Eye, BarChart3, PieChart, Tags, AlertCircle, Lightbulb, ThumbsUp } from 'lucide-react';
 
 import Recomendaciones from './Recomendaciones';
 import TablaCategorias from './TablaCategorias';
@@ -9,7 +9,7 @@ import TablaUrgencias from './TablaUrgencias';
 import Graficas from './Graficas';
 import useDashboardActivities from '../hooks/useDashboardActivities';
 
-import { clientesApi, consultasApi } from '../api/client';
+import { clientesApi, consultasApi, dashboardApi } from '../api/client';
 import { API_BASE } from '../api/url';
 
 const dias = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
@@ -48,6 +48,8 @@ export default function Dashboard({ visitas = 0 }) {
 
     const [resumenResueltas, setResumenResueltas] = useState(null);
     const [errorResueltas, setErrorResueltas] = useState(false);
+    const [satisfaccionClientes, setSatisfaccionClientes] = useState(null);
+    const [errorSatisfaccion, setErrorSatisfaccion] = useState(false);
 
     useEffect(() => {
         let activo = true;
@@ -86,6 +88,21 @@ export default function Dashboard({ visitas = 0 }) {
         return () => {
             activo = false;
         };
+    }, []);
+
+    useEffect(() => {
+        let activo = true;
+        dashboardApi.satisfaccionClientes()
+            .then((datos) => {
+                if (activo) {
+                    setSatisfaccionClientes(datos);
+                    setErrorSatisfaccion(false);
+                }
+            })
+            .catch(() => {
+                if (activo) setErrorSatisfaccion(true);
+            });
+        return () => { activo = false; };
     }, []);
 
 
@@ -145,7 +162,13 @@ export default function Dashboard({ visitas = 0 }) {
             icono: CheckCircle2,
             clase: 'resueltas'
         },
-        { nombre: 'Tiempo medio de respuesta', valor: '3,4 s', detalle: 'Datos de ejemplo', icono: Clock3, clase: 'tiempo' },
+        {
+            nombre: 'Porcentaje de satisfacción de clientes',
+            valor: errorSatisfaccion ? '—' : satisfaccionClientes === null ? '...' : satisfaccionClientes.porcentaje === null ? 'Sin datos' : `${satisfaccionClientes.porcentaje} %`,
+            detalle: errorSatisfaccion ? 'Error al cargar' : '',
+            icono: ThumbsUp,
+            clase: 'satisfaccion'
+        },
         { nombre: 'Visitas al Dashboard', valor: visitas, detalle: 'En este navegador', icono: Eye, clase: 'visitas' }
     ];
     return <section className="dashboard">
@@ -156,7 +179,7 @@ export default function Dashboard({ visitas = 0 }) {
         <div className="dash-stats">
             {indicadores.map(item => <article className={'dash-stat dash-stat-' + item.clase} key={item.nombre}>
                 <span className="dash-stat-icon"><item.icono size={26} /></span>
-                <div><h3>{item.nombre}</h3><strong>{item.valor}</strong><small>{item.detalle}</small></div>
+                <div><h3>{item.nombre}</h3><strong>{item.valor}</strong>{item.detalle && <small>{item.detalle}</small>}</div>
             </article>)}
         </div>
         <div className="dash-contenedor">
