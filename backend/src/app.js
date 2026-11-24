@@ -7,6 +7,7 @@ const swaggerSpec = require("./docs/swagger");
 const clienteRoutes = require("./routes/cliente.routes");
 const consultaRoutes = require("./routes/consulta.routes");
 const avatarRoutes = require("./routes/avatar.routes");
+const recomendacionRoutes = require("./routes/recomendacion.routes");
 const authRoutes = require("./routes/auth.routes");
 const {
   requireAuth,
@@ -75,6 +76,7 @@ app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/clientes", clienteRoutes);
 app.use("/api/consultas", consultaRoutes);
 app.use("/api/clientes/:id/avatar", requireSelfOrAdmin(), avatarRoutes);
+app.use("/api/recomendaciones", recomendacionRoutes);
 app.use(notFound);
 app.use(errorHandler);
 module.exports = app;
