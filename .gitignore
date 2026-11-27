@@ -7,3 +7,6 @@ build/
 coverage/
 npm-debug.log*
 .DS_Store
+
+# Backup de base de datos con datos personales; mantener fuera del repositorio
+copia_antes_rag.sql

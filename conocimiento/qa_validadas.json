@@ -1,0 +1,252 @@
+[
+  {
+    "id_consulta": 1,
+    "pregunta": "¿Cuál es el horario de atención?",
+    "respuesta": "Nuestro horario es de lunes a viernes de 9:00 a 18:00."
+  },
+  {
+    "id_consulta": 2,
+    "pregunta": "¿Cómo puedo cambiar mi contraseña?",
+    "respuesta": "Puede cambiar su contraseña desde el apartado Mi Cuenta."
+  },
+  {
+    "id_consulta": 3,
+    "pregunta": "¿Cómo puedo realizar un pedido?",
+    "respuesta": "Puede realizar su pedido desde nuestra página web."
+  },
+  {
+    "id_consulta": 4,
+    "pregunta": "¿Qué métodos de pago aceptan?",
+    "respuesta": "Aceptamos tarjeta, transferencia bancaria y PayPal."
+  },
+  {
+    "id_consulta": 5,
+    "pregunta": "¿Puedo cancelar mi pedido?",
+    "respuesta": "Sí, puede cancelar el pedido antes de que sea enviado."
+  },
+  {
+    "id_consulta": 6,
+    "pregunta": "¿Cuánto tarda el envío?",
+    "respuesta": "El envío suele tardar entre 2 y 5 días laborables."
+  },
+  {
+    "id_consulta": 7,
+    "pregunta": "¿Realizan envíos internacionales?",
+    "respuesta": "Sí, realizamos envíos a varios países de Europa."
+  },
+  {
+    "id_consulta": 9,
+    "pregunta": "¿Dónde puedo consultar mi factura?",
+    "respuesta": "Puede consultar sus facturas desde el apartado Mi Cuenta."
+  },
+  {
+    "id_consulta": 10,
+    "pregunta": "¿Puedo recibir la factura por correo?",
+    "respuesta": "Sí, podemos enviarle la factura a su correo electrónico."
+  },
+  {
+    "id_consulta": 11,
+    "pregunta": "¿Cómo puedo modificar mis datos personales?",
+    "respuesta": "Puede modificarlos desde su perfil de usuario."
+  },
+  {
+    "id_consulta": 12,
+    "pregunta": "¿Puedo cambiar mi dirección de envío?",
+    "respuesta": "Sí, puede modificarla antes de confirmar el pedido."
+  },
+  {
+    "id_consulta": 13,
+    "pregunta": "¿Cuánto cuesta el envío?",
+    "respuesta": "Los gastos de envío dependen del destino y del importe del pedido."
+  },
+  {
+    "id_consulta": 14,
+    "pregunta": "¿El envío es gratuito?",
+    "respuesta": "El envío es gratuito para pedidos superiores a 50 euros."
+  },
+  {
+    "id_consulta": 15,
+    "pregunta": "¿Cómo puedo hacer una devolución?",
+    "respuesta": "Debe solicitar la devolución desde su cuenta de cliente."
+  },
+  {
+    "id_consulta": 16,
+    "pregunta": "¿Cuánto tiempo tengo para devolver un producto?",
+    "respuesta": "Dispone de 30 días desde la recepción del pedido."
+  },
+  {
+    "id_consulta": 17,
+    "pregunta": "¿Puedo cambiar un producto?",
+    "respuesta": "Sí, puede solicitar un cambio dentro del plazo establecido."
+  },
+  {
+    "id_consulta": 18,
+    "pregunta": "¿Quién paga los gastos de devolución?",
+    "respuesta": "Depende del motivo de la devolución y de las condiciones de compra."
+  },
+  {
+    "id_consulta": 19,
+    "pregunta": "¿Dónde está mi pedido?",
+    "respuesta": "Puede consultar el estado del pedido desde su cuenta."
+  },
+  {
+    "id_consulta": 20,
+    "pregunta": "¿Puedo conocer el número de seguimiento?",
+    "respuesta": "Sí, recibirá el número de seguimiento por correo electrónico."
+  },
+  {
+    "id_consulta": 21,
+    "pregunta": "¿Qué tarjetas aceptan?",
+    "respuesta": "Aceptamos Visa, Mastercard y otras tarjetas compatibles."
+  },
+  {
+    "id_consulta": 22,
+    "pregunta": "¿Es seguro pagar con tarjeta?",
+    "respuesta": "Sí, utilizamos sistemas de pago seguros."
+  },
+  {
+    "id_consulta": 23,
+    "pregunta": "¿Puedo pagar mediante PayPal?",
+    "respuesta": "Sí, PayPal está disponible como método de pago."
+  },
+  {
+    "id_consulta": 24,
+    "pregunta": "¿Puedo pagar mediante transferencia?",
+    "respuesta": "Sí, ofrecemos la opción de transferencia bancaria."
+  },
+  {
+    "id_consulta": 26,
+    "pregunta": "¿A partir de cuánto es gratis el envío?",
+    "respuesta": "El envío es gratuito para pedidos superiores a 50 euros. Por debajo de ese importe, el coste se muestra antes de confirmar la compra."
+  },
+  {
+    "id_consulta": 27,
+    "pregunta": "¿Cómo hago una devolución?",
+    "respuesta": "Debes solicitar la devolución desde tu cuenta de cliente, en el apartado Mis pedidos. Recibirás las instrucciones para el envío de vuelta."
+  },
+  {
+    "id_consulta": 31,
+    "pregunta": "Me ha fallado el pago con tarjeta",
+    "respuesta": "Comprueba los datos de la tarjeta o prueba con otro método de pago. Utilizamos sistemas de pago seguros y no guardamos los datos completos de tu tarjeta."
+  },
+  {
+    "id_consulta": 32,
+    "pregunta": "El producto llegó defectuoso",
+    "respuesta": "Lamentamos el problema. Indícalo desde tu cuenta con una foto y el número de pedido: gestionaremos la devolución o el cambio sin coste para ti."
+  },
+  {
+    "id_consulta": 33,
+    "pregunta": "¿Hasta cuándo puedo devolver mi compra?",
+    "respuesta": "Dispones de 30 días naturales desde la recepción del pedido para devolver un producto."
+  },
+  {
+    "id_consulta": 36,
+    "pregunta": "Me equivoqué de dirección en el pedido",
+    "respuesta": "Si ya confirmaste el pedido, avisa cuanto antes a una persona del equipo de atención. Si aún no ha salido del almacén intentaremos corregirla; si ya salió, no podemos garantizarlo."
+  },
+  {
+    "id_consulta": 39,
+    "pregunta": "No puedo pagar, ¿qué hago?",
+    "respuesta": "Comprueba los datos de la tarjeta o prueba con otro método de pago. Utilizamos sistemas de pago seguros y no guardamos los datos completos de tu tarjeta."
+  },
+  {
+    "id_consulta": 40,
+    "pregunta": "¿Dónde descargo mi factura?",
+    "respuesta": "Puedes consultar y descargar tus facturas desde tu cuenta, en Mi Cuenta. Si prefieres recibirla por correo, solicítalo indicando el número de pedido."
+  },
+  {
+    "id_consulta": 44,
+    "pregunta": "¿Qué formas de pago aceptáis?",
+    "respuesta": "Aceptamos tarjeta (Visa, Mastercard y otras compatibles), transferencia bancaria y PayPal. Por ahora no aceptamos Bizum, aunque lo tenemos en cuenta como sugerencia."
+  },
+  {
+    "id_consulta": 46,
+    "pregunta": "¿Cuál es vuestro horario de atención?",
+    "respuesta": "Atendemos de lunes a viernes, de 9:00 a 18:00 (hora peninsular). Sábados, domingos y festivos nacionales no atendemos, pero puedes dejar tu consulta por escrito y te responderemos el siguiente día laborable."
+  },
+  {
+    "id_consulta": 48,
+    "pregunta": "¿Eres un robot?",
+    "respuesta": "Soy SofíaIA, el asistente virtual. Si necesitas a una persona, déjalo por escrito y te responderemos el siguiente día laborable (L–V, 9:00–18:00)."
+  },
+  {
+    "id_consulta": 49,
+    "pregunta": "Mi pedido ha llegado roto",
+    "respuesta": "Lamentamos el problema. Indícalo desde tu cuenta con una foto y el número de pedido: gestionaremos la devolución o el cambio sin coste para ti."
+  },
+  {
+    "id_consulta": 56,
+    "pregunta": "Quiero hablar con una persona",
+    "respuesta": "Soy SofíaIA, el asistente virtual. Si necesitas a una persona, déjalo por escrito y te responderemos el siguiente día laborable (L–V, 9:00–18:00)."
+  },
+  {
+    "id_consulta": 58,
+    "pregunta": "¿Cómo cancelo un pedido?",
+    "respuesta": "Puedes cancelar el pedido antes de que sea enviado: entra en tu cuenta, abre el pedido y pulsa Cancelar pedido. Si no aparece esa opción, ya fue enviado y puedes devolverlo cuando lo recibas. El reembolso se hace por el mismo método de pago."
+  },
+  {
+    "id_consulta": 60,
+    "pregunta": "He olvidado mi contraseña",
+    "respuesta": "Usa la opción de recuperar contraseña en la pantalla de inicio de sesión: recibirás un enlace en el correo de tu cuenta. Por seguridad, nunca te pediremos tu contraseña por el chat."
+  },
+  {
+    "id_consulta": 65,
+    "pregunta": "Quiero que borréis mis datos",
+    "respuesta": "Puedes modificar tus datos desde tu perfil y solicitar el acceso, la rectificación o la supresión escribiendo al equipo de atención. Tus consultas pueden ser procesadas por una IA de un proveedor externo y solo se envía la información necesaria."
+  },
+  {
+    "id_consulta": 77,
+    "pregunta": "Sería genial poder pagar con Bizum",
+    "respuesta": "Gracias por tu sugerencia, la trasladamos al equipo. Puedes dejar tus sugerencias y reclamaciones por escrito en atención al cliente."
+  },
+  {
+    "id_consulta": 81,
+    "pregunta": "¿A qué hora puedo hablar con una persona?",
+    "respuesta": "Atendemos de lunes a viernes, de 9:00 a 18:00 (hora peninsular). Sábados, domingos y festivos nacionales no atendemos, pero puedes dejar tu consulta por escrito y te responderemos el siguiente día laborable."
+  },
+  {
+    "id_consulta": 85,
+    "pregunta": "No sé dónde está mi paquete",
+    "respuesta": "Puedes consultar el estado de tu pedido desde tu cuenta, en el apartado Mis pedidos."
+  },
+  {
+    "id_consulta": 89,
+    "pregunta": "No puedo entrar en mi cuenta",
+    "respuesta": "Usa la opción de recuperar contraseña en la pantalla de inicio de sesión: recibirás un enlace en el correo de tu cuenta. Por seguridad, nunca te pediremos tu contraseña por el chat."
+  },
+  {
+    "id_consulta": 98,
+    "pregunta": "¿Se puede pagar con Bizum?",
+    "respuesta": "Aceptamos tarjeta (Visa, Mastercard y otras compatibles), transferencia bancaria y PayPal. Por ahora no aceptamos Bizum, aunque lo tenemos en cuenta como sugerencia."
+  },
+  {
+    "id_consulta": 102,
+    "pregunta": "Quiero cancelar mi pedido",
+    "respuesta": "Puedes cancelar el pedido antes de que sea enviado: entra en tu cuenta, abre el pedido y pulsa Cancelar pedido. Si no aparece esa opción, ya fue enviado y puedes devolverlo cuando lo recibas. El reembolso se hace por el mismo método de pago."
+  },
+  {
+    "id_consulta": 109,
+    "pregunta": "Necesito la factura de mi pedido",
+    "respuesta": "Puedes consultar y descargar tus facturas desde tu cuenta, en Mi Cuenta. Si prefieres recibirla por correo, solicítalo indicando el número de pedido."
+  },
+  {
+    "id_consulta": 122,
+    "pregunta": "¿Puedo anular una compra que acabo de hacer?",
+    "respuesta": "Puedes cancelar el pedido antes de que sea enviado: entra en tu cuenta, abre el pedido y pulsa Cancelar pedido. Si no aparece esa opción, ya fue enviado y puedes devolverlo cuando lo recibas. El reembolso se hace por el mismo método de pago."
+  },
+  {
+    "id_consulta": 127,
+    "pregunta": "¿Puedo pagar con transferencia?",
+    "respuesta": "Aceptamos tarjeta (Visa, Mastercard y otras compatibles), transferencia bancaria y PayPal. Por ahora no aceptamos Bizum, aunque lo tenemos en cuenta como sugerencia."
+  },
+  {
+    "id_consulta": 136,
+    "pregunta": "Quiero devolver un artículo, ¿qué hago?",
+    "respuesta": "Debes solicitar la devolución desde tu cuenta de cliente, en el apartado Mis pedidos. Recibirás las instrucciones para el envío de vuelta."
+  },
+  {
+    "id_consulta": 139,
+    "pregunta": "Os sugiero añadir más métodos de pago",
+    "respuesta": "Gracias por tu sugerencia, la trasladamos al equipo. Puedes dejar tus sugerencias y reclamaciones por escrito en atención al cliente."
+  }
+]
