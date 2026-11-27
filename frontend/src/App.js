@@ -12,6 +12,7 @@ import {
   CircleUserRound,
   LogOut,
   LayoutDashboard,
+  ShoppingCart,
 } from "lucide-react";
 import Brand from "./components/Brand";
 import Clientes from "./components/Clientes";
@@ -19,6 +20,7 @@ import ChatBot from "./components/ChatBot";
 import MisConsultas from "./components/MisConsultas";
 import Avatar from "./components/Avatar";
 import Dashboard from "./components/Dashboard";
+import Pedidos from "./components/Pedidos";
 import CookieConsent from "./components/CookieConsent";
 import Login from "./components/Login";
 import { conversacionesIniciales } from "./data/demo";
@@ -31,6 +33,7 @@ const tabs = [
   { id: "clientes", label: "Clientes", icon: Users },
   { id: "chat", label: "Chat Bot", icon: MessageSquare },
   { id: "mis-consultas", label: "Mis consultas", icon: ClipboardList },
+  { id: "pedidos", label: "Pedidos", icon: ShoppingCart },
   { id: "avatar", label: "Avatar", icon: UserRound },
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
 ];
@@ -307,6 +310,9 @@ export default function App() {
             )}
             {activeTab === "mis-consultas" && user.Rol === "Cliente" && (
               <MisConsultas />
+            )}
+            {activeTab === "pedidos" && (
+              <Pedidos isAdmin={user.Rol === "Administrador"} />
             )}
             {activeTab === "avatar" && <Avatar />}
             {activeTab === "dashboard" && user.Rol === "Administrador" && (

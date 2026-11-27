@@ -92,3 +92,20 @@ export const dashboardTablasApi = {
 export const dashboardApi = {
   satisfaccionClientes: () => api("/consultas/resumen/satisfaccion/clientes"),
 };
+
+export const articulosApi = {
+  listar: () => api("/articulos"),
+};
+
+export const pedidosApi = {
+  listar: (limit = 50, offset = 0) =>
+    api(`/pedidos?limit=${limit}&offset=${offset}`),
+  crear: (lineas) =>
+    api("/pedidos", { method: "POST", body: JSON.stringify({ lineas }) }),
+  cancelar: (id) => api(`/pedidos/${id}/cancelar`, { method: "PATCH" }),
+  cambiarEstado: (id, estado) =>
+    api(`/pedidos/${id}/estado`, {
+      method: "PATCH",
+      body: JSON.stringify({ estado }),
+    }),
+};

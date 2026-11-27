@@ -1,0 +1,23 @@
+.site.pedidos-theme { --accent: #8a5cf6; --tint: #f1ebff; --soft: #dccdff; }
+.tab-pedidos { background: #f1ebff; color: #4c2f9a; }
+.tab-pedidos.active { background: #8a5cf6; color: #fff; }
+.pedidos-catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.pedidos-articulo, .pedidos-pedido { border: 1px solid #e5e7eb; border-radius: 14px; padding: 14px; display: flex; justify-content: space-between; gap: 12px; }
+.pedidos-articulo p { margin: 6px 0 0; font-size: 13px; color: #687080; }
+.pedidos-categoria { margin-left: 8px; font-size: 12px; color: #8a5cf6; }
+.pedidos-compra, .pedidos-lateral { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+.pedidos-compra input { width: 64px; margin-left: 6px; }
+.pedidos-agotado { color: #b42318; font-size: 13px; }
+.pedidos-resumen { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 24px; }
+.pedidos-lista { display: grid; gap: 10px; }
+.pedidos-pedido ul { margin: 6px 0 0; padding-left: 18px; font-size: 13px; }
+.pedidos-estado { border-radius: 999px; padding: 2px 10px; font-size: 12px; background: #eef0f5; }
+.estado-pendiente { background: #fff3c7; }
+.estado-preparando { background: #e0ecff; }
+.estado-enviado { background: #e5f4e4; }
+.estado-entregado { background: #d6e7cd; }
+.estado-cancelado { background: #fbebeb; }
+.pedidos-cancelar { border: 0; background: transparent; color: #b42318; display: inline-flex; gap: 4px; align-items: center; cursor: pointer; }
+.pedidos-error { color: #b42318; }
+.pedidos-ok { color: #1b6b2f; }
+.dark .pedidos-articulo, .dark .pedidos-pedido { border-color: #384056; }

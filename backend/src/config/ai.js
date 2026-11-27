@@ -19,12 +19,20 @@ function readAiConfig(source = process.env) {
     maxOutputTokens: integer("AI_MAX_OUTPUT_TOKENS", 1200, 128, 4000),
     maxQuestionChars: 8000,
     maxContextChars: 24000,
+    // RAG opcional: API de búsqueda de documentos (Render). Vacío = desactivado.
+    ragUrl: (source.RAG_URL || "").trim().replace(/\/+$/, ""),
+    ragApiKey: source.RAG_API_KEY || "",
+    ragTimeoutMs: integer("RAG_TIMEOUT_MS", 60000, 1000, 120000),
   };
   if (mode === "gemini" && (!config.apiKey.trim() || !config.model.trim())) {
     throw new Error(
       "Para activar IA configura GEMINI_API_KEY y GEMINI_MODEL en el servidor.",
     );
   }
+  if (config.ragUrl && !/^https?:\/\//.test(config.ragUrl))
+    throw new Error("RAG_URL debe empezar por http:// o https://.");
+  if (config.ragUrl && !config.ragApiKey)
+    throw new Error("Si defines RAG_URL, define también RAG_API_KEY.");
   if (!/^gemini-[a-zA-Z0-9.-]{1,100}$/.test(config.model))
     throw new Error("GEMINI_MODEL no es un identificador válido.");
   return config;

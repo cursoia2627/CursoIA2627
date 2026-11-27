@@ -1,6 +1,8 @@
 const { createHash } = require("node:crypto");
 
 const { resolveClassification } = require("./ai-classification");
+const { buscarContexto } = require("./rag.service");
+const { contextoPedidos } = require("./pedido.service");
 
 
 async function loadCatalogos(connection) {
@@ -66,7 +68,17 @@ function createWorker({ pool, config, answer, database, logger = console }) {
 
       const catalogos = await loadCatalogos(connection);
 
-      const resultado = await answer(job, history, catalogos);
+      // Contexto extra: documentos/catálogo (RAG) y pedidos del PROPIO cliente de la consulta.
+      // El id sale de la fila de la consulta, no del texto del cliente.
+      const [rag, pedidos] = await Promise.all([
+        buscarContexto(job.Consulta, config),
+        contextoPedidos(job.id).catch(() => ""),
+      ]);
+
+      const resultado = await answer(job, history, catalogos, {
+        contexto: rag.contexto,
+        pedidos,
+      });
 
       const clasificacion = resolveClassification(resultado, catalogos);
 

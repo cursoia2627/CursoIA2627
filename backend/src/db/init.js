@@ -177,6 +177,18 @@ async function initializeDatabase() {
   await pool.query(
     "CREATE TABLE IF NOT EXISTS login_sessions(jti CHAR(36) NOT NULL PRIMARY KEY,id_cliente INT NOT NULL,expires_at DATETIME NOT NULL,created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,KEY idx_login_sessions_expiration(expires_at),CONSTRAINT fk_login_session_cliente FOREIGN KEY(id_cliente) REFERENCES clientes(id_cliente) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
   );
+  // Catálogo y pedidos (la carga de datos de ejemplo se hace con database/catalogo-pedidos-datos.sql)
+  await pool.query(
+    "CREATE TABLE IF NOT EXISTS articulos(id_articulo INT NOT NULL AUTO_INCREMENT PRIMARY KEY,nombre VARCHAR(100) NOT NULL,categoria VARCHAR(50) NOT NULL,descripcion TEXT NOT NULL,precio DECIMAL(8,2) NOT NULL,stock INT NOT NULL DEFAULT 0,activo TINYINT(1) NOT NULL DEFAULT 1,CONSTRAINT chk_articulos_precio CHECK (precio>0),CONSTRAINT chk_articulos_stock CHECK (stock>=0)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
+  );
+  await pool.query(
+    "CREATE TABLE IF NOT EXISTS pedidos(id_pedido INT NOT NULL AUTO_INCREMENT PRIMARY KEY,id_cliente INT NOT NULL,fecha_pedido TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,estado ENUM('pendiente','preparando','enviado','entregado','cancelado') NOT NULL DEFAULT 'pendiente',total DECIMAL(10,2) NOT NULL,origen ENUM('real','sintetico') NOT NULL DEFAULT 'real',KEY idx_pedidos_cliente(id_cliente),CONSTRAINT fk_pedidos_cliente FOREIGN KEY(id_cliente) REFERENCES clientes(id_cliente) ON DELETE CASCADE ON UPDATE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
+  );
+  await pool.query(
+    "CREATE TABLE IF NOT EXISTS pedido_lineas(id_linea INT NOT NULL AUTO_INCREMENT PRIMARY KEY,id_pedido INT NOT NULL,id_articulo INT NOT NULL,cantidad INT NOT NULL,precio_unitario DECIMAL(8,2) NOT NULL,KEY idx_lineas_pedido(id_pedido),KEY idx_lineas_articulo(id_articulo),CONSTRAINT chk_lineas_cantidad CHECK (cantidad>0),CONSTRAINT fk_lineas_pedido FOREIGN KEY(id_pedido) REFERENCES pedidos(id_pedido) ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT fk_lineas_articulo FOREIGN KEY(id_articulo) REFERENCES articulos(id_articulo) ON UPDATE CASCADE) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
+  );
+  // Distingue consultas reales de las sintéticas (datos de prueba para el RAG)
+  await ensureColumn("atencion_cliente", "origen", "ENUM('real','sintetico') NOT NULL DEFAULT 'real'");
   await pool.query(
     "CREATE OR REPLACE VIEW conversaciones_categoria AS SELECT a.id_consulta,a.id,a.Consulta,a.Respuesta,a.estado_respuesta,a.fecha_creacion,a.fecha_respuesta,a.valoracion,a.id_categoria,cat.nombre categoria,a.id_urgencia,urg.nombre urgencia,c.nombre nombre,c.apellido apellido,c.email email FROM atencion_cliente a JOIN clientes c ON c.id_cliente=a.id JOIN categoria cat ON cat.id_categoria=a.id_categoria JOIN urgencia urg ON urg.id_urgencia=a.id_urgencia",
   );

@@ -9,6 +9,8 @@ const consultaRoutes = require("./routes/consulta.routes");
 const avatarRoutes = require("./routes/avatar.routes");
 const recomendacionRoutes = require("./routes/recomendacion.routes");
 const authRoutes = require("./routes/auth.routes");
+const articuloRoutes = require("./routes/articulo.routes");
+const pedidoRoutes = require("./routes/pedido.routes");
 const {
   requireAuth,
   requireRole,
@@ -77,6 +79,8 @@ app.use("/api/clientes", clienteRoutes);
 app.use("/api/consultas", consultaRoutes);
 app.use("/api/clientes/:id/avatar", requireSelfOrAdmin(), avatarRoutes);
 app.use("/api/recomendaciones", recomendacionRoutes);
+app.use("/api/articulos", articuloRoutes);
+app.use("/api/pedidos", pedidoRoutes);
 app.use(notFound);
 app.use(errorHandler);
 module.exports = app;
